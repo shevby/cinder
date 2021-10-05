@@ -23,12 +23,14 @@ std::vector<std::vector<TILE_TYPE>> generate_bioms(unsigned int seed, size_t wid
         int x;
         int y;
         TILE_TYPE tile;
-        biom_center_t(int _x, int _y, int _tile): x(_x), y(_y), tile(_tile) {};
+        int distance_multiplier;
+        biom_center_t(int _x, int _y, int _tile, int _distance_multiplier):
+            x(_x), y(_y), tile(_tile), distance_multiplier(_distance_multiplier) {};
     };
 
     std::vector<biom_center_t> biom_centers;
     for (auto biom : bioms) {
-        biom_centers.push_back(biom_center_t(rand() % width, rand() % height, biom));
+        biom_centers.push_back(biom_center_t(rand() % width, rand() % height, biom, rand() % 10 + 2));
     }
 
     std::vector<std::vector<TILE_TYPE>> map;
@@ -41,7 +43,7 @@ std::vector<std::vector<TILE_TYPE>> generate_bioms(unsigned int seed, size_t wid
             for (auto biom_center : biom_centers) {
                 auto x_diff = std::abs((double)(x - biom_center.x));
                 auto y_diff = std::abs((double)(y - biom_center.y));
-                double distance = x_diff * x_diff + y_diff * y_diff;
+                double distance = (x_diff * x_diff + y_diff * y_diff) * biom_center.distance_multiplier;
                 if (distance < min_distance) {
                     min_distance = distance;
                     closest_biom = biom_center.tile;
