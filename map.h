@@ -27,6 +27,9 @@ struct Map {
     uint32_t width;
     uint32_t height;
     uint8_t * map;
+
+    Map(uint32_t _width, uint32_t _height, uint64_t _seed);
+    ~Map();
 };
 
 }; // namespace Cinder
