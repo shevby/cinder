@@ -4,6 +4,8 @@
 #include <vector>
 #include <stdlib.h>
 
+#include "stable_random.h"
+
 namespace Cinder {
 
 /**
@@ -15,7 +17,7 @@ namespace Cinder {
 template <typename TILE_TYPE>
 std::vector<std::vector<TILE_TYPE>> generate_bioms(unsigned int seed, size_t width, size_t height, std::vector<TILE_TYPE> bioms)
 {
-    srand(seed);
+    Random rnd(seed);
 
     struct biom_center_t {
         int x;
@@ -28,7 +30,7 @@ std::vector<std::vector<TILE_TYPE>> generate_bioms(unsigned int seed, size_t wid
 
     std::vector<biom_center_t> biom_centers;
     for (auto biom : bioms) {
-        biom_centers.push_back(biom_center_t(rand() % width, rand() % height, biom, rand() % 10 + 2));
+        biom_centers.push_back(biom_center_t(rnd.rand() % width, rnd.rand() % height, biom, rnd.rand() % 10 + 2));
     }
 
     std::vector<std::vector<TILE_TYPE>> map;
