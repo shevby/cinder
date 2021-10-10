@@ -1,5 +1,4 @@
-#ifndef _CINDER_MAP_H_
-#define _CINDER_MAP_H_
+#pragma once
 
 #include <cstdint>
 
@@ -37,4 +36,3 @@ struct Map {
 
 }; // namespace Cinder
 
-#endif // ifndef _CINDER_MAP_H_

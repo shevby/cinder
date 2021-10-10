@@ -1,5 +1,4 @@
-#ifndef _CINDER_BIOM_GENERATOR_H_
-#define _CINDER_BIOM_GENERATOR_H_
+#pragma once
 
 #include <vector>
 #include <stdlib.h>

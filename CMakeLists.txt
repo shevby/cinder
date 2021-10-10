@@ -5,4 +5,16 @@ project(cinder LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(cinder main.cpp stable_random.cpp map.cpp)
+set(SOURCES
+    main.cpp
+    stable_random.cpp
+    map.cpp
+    )
+
+set(HEADERS
+    biom_generator.h
+    map.h
+    stable_random.h
+    )
+
+add_executable(cinder ${SOURCES} ${HEADERS})
