@@ -3,6 +3,8 @@
 
 #include "map.h"
 
+extern void run_sin_parser_tests();
+
 using namespace std;
 
 constexpr uint32_t MAP_WIDTH = 512;
@@ -10,6 +12,7 @@ constexpr uint32_t MAP_HEIGHT = MAP_WIDTH;
 
 void print_help() {
     std::cout << "Options: \n"
+              << "    --run-sin-parser-tests\n"
               << "    --generate-map <seed> (seed is a 64-bit number)\n";
 }
 
@@ -18,6 +21,11 @@ int main(int argc, char **argv)
     if (argc == 1) {
         print_help();
         return 1;
+    }
+
+    if (strcmp(argv[1], "--run-sin-parser-tests") == 0) {
+        run_sin_parser_tests();
+        return 0;
     }
 
     if (strcmp(argv[1], "--generate-map") == 0) {
