@@ -16,6 +16,18 @@ static bool read_till_delimeter(std::stringstream &ss, std::string &res, int del
     return false;
 }
 
+static bool read_till_delimeter_or_eof(std::stringstream &ss, std::string &res, int delim1, int delim2 = 257 /* not in range */) {
+    res = "";
+    while(!ss.eof()) {
+        char ch = ss.get();
+        if ((ch == delim1) || (ch == delim2) || ss.eof()) {
+            return true;
+        }
+        res += ch;
+    }
+    return true;
+}
+
 static bool expect_char(std::stringstream &ss, int ch1, int ch2 = 257 /* not in range */) {
     if (ss.eof()) {
         return false;
@@ -104,7 +116,7 @@ bool parse_var(std::stringstream &ss, std::string &var, std::string &_type, std:
             && skip_empty_space(ss)
             && expect_char(ss, '\n')
             && skip_empty_space(ss)
-            && read_till_delimeter(ss, value, '\n', ' ')
+            && read_till_delimeter_or_eof(ss, value, '\n', ' ')
             && skip_empty_space_and_newline(ss);
     }
 }
@@ -116,7 +128,7 @@ bool parse_sins(std::stringstream &ss, std::vector<parsed_sin> &sins) {
 
         skip_empty_space_and_newline(ss);
         if (ss.eof()) {
-            return true;
+            goto three_dots_postprocessing;
         }
 
         parsed_sin sin;
@@ -125,6 +137,23 @@ bool parse_sins(std::stringstream &ss, std::vector<parsed_sin> &sins) {
         }
 
         sins.push_back(sin);
+    }
+
+    three_dots_postprocessing:
+
+    std::string top_level_var;
+    for (auto &sin: sins) {
+        if ((sin.name.size() > 2) && (sin.name[0] == '.') && (sin.name[1] == '.') && (sin.name[2] == '.')) {
+            if (top_level_var == "") {
+                return false;
+            }
+
+            sin.name.erase(0, 3);
+            sin.name = top_level_var + "." + sin.name;
+        }
+        else {
+            top_level_var = sin.name;
+        }
     }
 
     return true;
@@ -212,7 +241,9 @@ void run_sin_parser_tests() {
                           "` \n"
                           "\n"
                           "int: int64\n"
-                          " 7000700\n");
+                          " 7000700\n"
+                          "...subvar: uint8\n"
+                          "10");
     std::vector<parsed_sin> sins6;
     bool ret6 = parse_sins(ss6, sins6);
     bool_assert(ret6, "test 6: not parsed");
@@ -225,6 +256,9 @@ void run_sin_parser_tests() {
     str_assert(sins6[1].name, "int", "test 6/2");
     str_assert(sins6[1]._type, "int64", "test 6/2");
     str_assert(sins6[1].value, "7000700", "test 6/2");
+    str_assert(sins6[2].name, "int.subvar", "test 6/3");
+    str_assert(sins6[2]._type, "uint8", "test 6/3");
+    str_assert(sins6[2].value, "10", "test 6/3");
 }
 
 } //namespace Cinder
