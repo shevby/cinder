@@ -56,5 +56,3 @@ std::vector<std::vector<TILE_TYPE>> generate_bioms(unsigned int seed, size_t wid
 }
 
 }; // namespace Cinder
-
-#endif

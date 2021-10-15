@@ -9,6 +9,7 @@ set(SOURCES
     main.cpp
     stable_random.cpp
     map.cpp
+    sin_parser.cpp
     )
 
 set(HEADERS
