@@ -36,7 +36,7 @@ Map::Map(uint32_t _width, uint32_t _height, uint64_t _seed) :
 }
 
 Map::~Map() {
-    delete map;
+    delete[] map;
 }
 
 void Map::save_to_file(const char *filename) {
@@ -55,7 +55,7 @@ void Map::save_to_file(const char *filename) {
 // TODO: replace with a reliable implementation
 // When reading 512x512 it skips last 12 tiles of the map
 void Map::load_from_file(const char *filename) {
-    delete map;
+    delete[] map;
 
     FILE *f;
     f = fopen(filename, "rb");
