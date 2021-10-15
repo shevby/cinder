@@ -2,8 +2,7 @@
 #include <iostream>
 
 #include "map.h"
-
-extern void run_sin_parser_tests();
+#include "sin_parser.h"
 
 using namespace std;
 
@@ -24,7 +23,7 @@ int main(int argc, char **argv)
     }
 
     if (strcmp(argv[1], "--run-sin-parser-tests") == 0) {
-        run_sin_parser_tests();
+        Cinder::run_sin_parser_tests();
         return 0;
     }
 

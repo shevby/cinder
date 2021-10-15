@@ -1,5 +1,8 @@
 #include <iostream>
-#include <sstream>
+
+#include "sin_parser.h"
+
+namespace Cinder {
 
 static bool read_till_delimeter(std::stringstream &ss, std::string &res, int delim1, int delim2 = 257 /* not in range */) {
     res = "";
@@ -104,7 +107,27 @@ bool parse_var(std::stringstream &ss, std::string &var, std::string &_type, std:
             && read_till_delimeter(ss, value, '\n', ' ')
             && skip_empty_space_and_newline(ss);
     }
+}
 
+bool parse_sins(std::stringstream &ss, std::vector<parsed_sin> &sins) {
+    sins = {};
+
+    while (!ss.eof()) {
+
+        skip_empty_space_and_newline(ss);
+        if (ss.eof()) {
+            return true;
+        }
+
+        parsed_sin sin;
+        if (!parse_var(ss, sin.name, sin._type, sin.value)) {
+            return false;
+        }
+
+        sins.push_back(sin);
+    }
+
+    return true;
 }
 
 static void bool_assert(bool var, const std::string &descr) {
@@ -182,4 +205,26 @@ void run_sin_parser_tests() {
     str_assert(value5, "       12345  \n"
                        "~~~~~~~~~~\n",
                "test 5");
+
+    std::stringstream ss6(" \n"
+                          " foo : `\n"
+                          "bar\n"
+                          "` \n"
+                          "\n"
+                          "int: int64\n"
+                          " 7000700\n");
+    std::vector<parsed_sin> sins6;
+    bool ret6 = parse_sins(ss6, sins6);
+    bool_assert(ret6, "test 6: not parsed");
+    if (sins6.size() != 2) {
+        std::cout << "test 6: 2 items expected, " << sins6.size() << " found\n";
+    }
+    str_assert(sins6[0].name, "foo", "test 6/1");
+    str_assert(sins6[0]._type, "string", "test 6/1");
+    str_assert(sins6[0].value, "bar", "test 6/1");
+    str_assert(sins6[1].name, "int", "test 6/2");
+    str_assert(sins6[1]._type, "int64", "test 6/2");
+    str_assert(sins6[1].value, "7000700", "test 6/2");
 }
+
+} //namespace Cinder
