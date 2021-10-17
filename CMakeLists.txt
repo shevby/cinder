@@ -16,6 +16,7 @@ set(HEADERS
     biom_generator.h
     map.h
     stable_random.h
+    sin_parser.h
     )
 
 add_executable(cinder ${SOURCES} ${HEADERS})
