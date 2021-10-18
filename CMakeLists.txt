@@ -10,12 +10,10 @@ set(SOURCES
     stable_random.cpp
     map.cpp
     sin_parser.cpp
-    biom_generator.cpp
     perlin_noise.cpp
     )
 
 set(HEADERS
-    biom_generator.h
     map.h
     stable_random.h
     sin_parser.h
