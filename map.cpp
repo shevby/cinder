@@ -22,34 +22,14 @@ Map::Map(uint32_t _width, uint32_t _height, uint64_t seed) :
                 perlin(seed + 400000 + 0.001 * x + 0.111, seed + 40000 + 0.001 * y + 0.1111)
             );
 
-            Biomes biom;
-
-            if (altitude < 0) {
-                biom = temperature > -0.3 ? Biomes::WATER : Biomes::GLACIER;
-            }
-            else if (altitude > 0.35) {
-                biom = Biomes::HIGH_ROCK;
-            }
-            else if (altitude > 0.25) {
-                biom = Biomes::ROCK;
-            }
-            else {
-                if (moisture > 0.3) {
-                    biom = Biomes::SWAMP;
-                }
-                else if (moisture > 0.1) {
-                    biom = Biomes::FOREST;
-                }
-                else if (moisture > -0.1) {
-                    biom = Biomes::FIELD;
-                }
-                else if (moisture > -0.2) {
-                    biom = Biomes::SAVANNA;
-                }
-                else {
-                    biom = Biomes::DESERT;
-                }
-            }
+            Biomes biom = altitude < 0 ? temperature > -0.3 ? Biomes::WATER : Biomes::GLACIER
+                        : altitude > 0.35 ? Biomes::HIGH_ROCK
+                        : altitude > 0.25 ? Biomes::ROCK
+                        : moisture > 0.3 ? Biomes::SWAMP
+                        : moisture > 0.1 ? Biomes::FOREST
+                        : moisture > -0.1 ? Biomes::FIELD
+                        : moisture > -0.2 ? Biomes::SAVANNA
+                        : Biomes::DESERT;
 
             map[x * height + y] = static_cast<uint8_t>(biom);
         }
