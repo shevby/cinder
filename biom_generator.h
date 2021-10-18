@@ -3,6 +3,7 @@
 #include <vector>
 #include <stdlib.h>
 
+#include "map.h"
 #include "stable_random.h"
 
 namespace Cinder {
@@ -54,5 +55,7 @@ std::vector<std::vector<TILE_TYPE>> generate_bioms(unsigned int seed, size_t wid
     }
     return map;
 }
+
+std::vector<std::vector<Biomes>> generate_bioms_perlin_noise(size_t width, size_t height);
 
 }; // namespace Cinder
