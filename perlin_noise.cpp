@@ -5,7 +5,7 @@
 /* Function to linearly interpolate between a0 and a1
  * Weight w should be in the range [0.0, 1.0]
  */
-float interpolate(float a0, float a1, float w) {
+static float interpolate(float a0, float a1, float w) {
     /* // You may want clamping by inserting:
      * if (0.0 > w) return a0;
      * if (1.0 < w) return a1;
@@ -25,7 +25,7 @@ typedef struct {
 
 /* Create pseudorandom direction vector
  */
-vector2 randomGradient(int ix, int iy) {
+static vector2 randomGradient(int ix, int iy) {
     // No precomputed gradients mean this works for any number of grid coordinates
     const unsigned w = 8 * sizeof(unsigned);
     const unsigned s = w / 2; // rotation width
@@ -40,7 +40,7 @@ vector2 randomGradient(int ix, int iy) {
 }
 
 // Computes the dot product of the distance and gradient vectors.
-float dotGridGradient(int ix, int iy, float x, float y) {
+static float dotGridGradient(int ix, int iy, float x, float y) {
     // Get gradient from integer coordinates
     vector2 gradient = randomGradient(ix, iy);
 
