@@ -41,8 +41,13 @@ int main(int argc, char **argv)
     }
 
     if (strcmp(argv[1], "--generate-map-with-perlin-noise") == 0) {
+        if (argc != 3) {
+            print_help();
+            return 1;
+        }
+        uint64_t seed = std::strtoul(argv[2], NULL, 10);
         Cinder::Map map(MAP_WIDTH, MAP_HEIGHT, 0);
-        auto tiles_as_vector = Cinder::generate_bioms_perlin_noise(MAP_WIDTH, MAP_HEIGHT);
+        auto tiles_as_vector = Cinder::generate_bioms_perlin_noise(seed, MAP_WIDTH, MAP_HEIGHT);
 
         for (size_t i = 0; i < tiles_as_vector.size(); ++i) { 
             for (size_t j = 0; j < tiles_as_vector[0].size(); ++j) {

@@ -6,7 +6,7 @@
 
 namespace Cinder {
 
-std::vector<std::vector<Biomes>> generate_bioms_perlin_noise(size_t width, size_t height)
+std::vector<std::vector<Biomes>> generate_bioms_perlin_noise(uint64_t seed, size_t width, size_t height)
 {
     std::vector<std::vector<Biomes>> map;
 
@@ -15,9 +15,9 @@ std::vector<std::vector<Biomes>> generate_bioms_perlin_noise(size_t width, size_
         for (size_t y = 0; y < height; ++y) {
             auto noise = perlin(0.1 * x + 0.5, 0.1 * y + 0.5);
 
-            float temperature = perlin(0.03 * x + 0.5, 0.03 * y + 0.5);
-            float moisture    = perlin(5000 + 0.02 * x + 0.111, 5000 + 0.02 * y + 0.1111);
-            float height      = perlin(100000 + 0.1 * x + 0.111, 10000 + 0.1 * y + 0.1111);
+            float temperature = perlin(seed + 0.03 * x + 0.5, seed + 0.03 * y + 0.5);
+            float moisture    = perlin(seed + 5000 + 0.02 * x + 0.111, seed + 5000 + 0.02 * y + 0.1111);
+            float height      = perlin(seed + 100000 + 0.1 * x + 0.111, seed + 10000 + 0.1 * y + 0.1111);
 
             Biomes biom;
 
