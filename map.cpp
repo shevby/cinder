@@ -15,12 +15,17 @@ Map::Map(uint32_t _width, uint32_t _height, uint64_t seed) :
         for (size_t y = 0; y < height; ++y) {
             float temperature = perlin(seed + 0.03 * x + 0.5, seed + 0.03 * y + 0.5);
             float moisture    = perlin(seed + 5000 + 0.02 * x + 0.111, seed + 5000 + 0.02 * y + 0.1111);
-            float altitude    = perlin(seed + 100000 + 0.1 * x + 0.111, seed + 10000 + 0.1 * y + 0.1111);
+            float altitude    = 0.25 * (
+                perlin(seed + 100000 + 0.1 * x + 0.111, seed + 10000 + 0.1 * y + 0.1111) +
+                perlin(seed + 200000 + 0.01 * x + 0.111, seed + 20000 + 0.01 * y + 0.1111) +
+                perlin(seed + 300000 + 0.005 * x + 0.111, seed + 30000 + 0.005 * y + 0.1111) +
+                perlin(seed + 400000 + 0.001 * x + 0.111, seed + 40000 + 0.001 * y + 0.1111)
+            );
 
             Biomes biom;
 
             if (altitude < 0) {
-                biom = temperature > 0 ? Biomes::WATER : Biomes::GLACIER;
+                biom = temperature > -0.3 ? Biomes::WATER : Biomes::GLACIER;
             }
             else if (altitude > 0.35) {
                 biom = Biomes::HIGH_ROCK;
