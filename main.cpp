@@ -13,8 +13,7 @@ constexpr uint32_t MAP_HEIGHT = MAP_WIDTH;
 void print_help() {
     std::cout << "Options: \n"
               << "    --run-sin-parser-tests\n"
-              << "    --generate-map <seed> (seed is a 64-bit number)\n"
-              << "    --generate-map-with-perlin-noise\n";
+              << "    --generate-map <seed> (seed is a 64-bit number)\n";
 }
 
 int main(int argc, char **argv)
@@ -30,17 +29,6 @@ int main(int argc, char **argv)
     }
 
     if (strcmp(argv[1], "--generate-map") == 0) {
-        if (argc != 3) {
-            print_help();
-            return 1;
-        }
-        uint64_t seed = std::strtoul(argv[2], NULL, 10);
-        Cinder::Map map(MAP_WIDTH, MAP_HEIGHT, seed);
-        map.save_to_file("map.bin");
-        return 0;
-    }
-
-    if (strcmp(argv[1], "--generate-map-with-perlin-noise") == 0) {
         if (argc != 3) {
             print_help();
             return 1;
