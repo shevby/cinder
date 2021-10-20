@@ -11,6 +11,7 @@ set(SOURCES
     map.cpp
     sin_parser.cpp
     perlin_noise.cpp
+    arg_parser.cpp
     )
 
 set(HEADERS
@@ -18,6 +19,7 @@ set(HEADERS
     stable_random.h
     sin_parser.h
     perlin_noise.h
+    arg_parser.h
     )
 
 add_executable(cinder ${SOURCES} ${HEADERS})
