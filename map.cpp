@@ -13,6 +13,7 @@ Map::Map(const MapConfig &cfg) :
 {
     auto seed = cfg.seed;
 
+    #pragma omp parallel for
     for (size_t x = 0; x < width; ++x) {
         for (size_t y = 0; y < height; ++y) {
             float temperature = perlin(seed + 0.03 * x + 0.5, seed + 0.03 * y + 0.5);
