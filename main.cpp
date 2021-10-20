@@ -5,6 +5,16 @@
 #include "map.h"
 #include "sin_parser.h"
 
+#define INT_PARAM(DEST, NAME) \
+    if (args.params.find(NAME) != args.params.end()) { \
+        DEST = std::strtoul(args.params[NAME].c_str(), NULL, 10); \
+    }
+
+#define FLOAT_PARAM(DEST, NAME) \
+        if (args.params.find(NAME) != args.params.end()) { \
+            DEST = std::stof(args.params[NAME].c_str(), NULL); \
+        }
+
 using namespace std;
 
 void print_help() {
@@ -50,32 +60,16 @@ int main(int argc, char **argv)
             cfg.seed = rand();
         }
         else {
-            cfg.seed = std::strtoul(args.params["seed"].c_str(), NULL, 10);
+            INT_PARAM(cfg.seed, "seed")
         }
 
-        if (args.params.find("width") != args.params.end()) {
-            cfg.width = std::strtoul(args.params["width"].c_str(), NULL, 10);
-        }
+        INT_PARAM(cfg.width, "width")
+        INT_PARAM(cfg.height, "height")
+        INT_PARAM(cfg.sea_level, "sea-level")
 
-        if (args.params.find("height") != args.params.end()) {
-            cfg.height = std::strtoul(args.params["height"].c_str(), NULL, 10);
-        }
-
-        if (args.params.find("sea-level") != args.params.end()) {
-            cfg.sea_level = std::stof(args.params["sea-level"].c_str(), NULL);
-        }
-
-        if (args.params.find("high-rock-level") != args.params.end()) {
-            cfg.high_rock_level = std::stof(args.params["high-rock-level"].c_str(), NULL);
-        }
-
-        if (args.params.find("rock-level") != args.params.end()) {
-            cfg.rock_level = std::stof(args.params["rock-level"].c_str(), NULL);
-        }
-
-        if (args.params.find("wet-equator") != args.params.end()) {
-            cfg.wet_equator = std::stof(args.params["wet-equator"].c_str(), NULL);
-        }
+        FLOAT_PARAM(cfg.high_rock_level, "high-rock-level")
+        FLOAT_PARAM(cfg.rock_level, "rock-level")
+        FLOAT_PARAM(cfg.wet_equator, "wet-equator")
 
         if (args.params.find("output") != args.params.end()) {
             output_file = args.params["output"];
