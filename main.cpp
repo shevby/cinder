@@ -16,7 +16,9 @@ void print_help() {
               << "        width=<width>\n"
               << "        height=<height>\n"
               << "        output=<output file>\n"
-              << "        sea-level=<level> a number between -0.5 and 0.5\n";
+              << "        sea-level=<level> a number between -0.5 and 0.5\n"
+              << "        high-rock-level=<level>\n"
+              << "        rock-level=<level>\n";
 }
 
 int main(int argc, char **argv)
@@ -60,6 +62,14 @@ int main(int argc, char **argv)
 
         if (args.params.find("sea-level") != args.params.end()) {
             cfg.sea_level = std::stof(args.params["sea-level"].c_str(), NULL);
+        }
+
+        if (args.params.find("high-rock-level") != args.params.end()) {
+            cfg.high_rock_level = std::stof(args.params["high-rock-level"].c_str(), NULL);
+        }
+
+        if (args.params.find("rock-level") != args.params.end()) {
+            cfg.rock_level = std::stof(args.params["rock-level"].c_str(), NULL);
         }
 
         if (args.params.find("output") != args.params.end()) {

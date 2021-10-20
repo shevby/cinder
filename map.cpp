@@ -26,8 +26,8 @@ Map::Map(const MapConfig &cfg) :
             );
 
             Biomes biom = altitude < cfg.sea_level ? temperature > -0.3 ? Biomes::WATER : Biomes::GLACIER
-                        : altitude > 0.35 ? Biomes::HIGH_ROCK
-                        : altitude > 0.25 ? Biomes::ROCK
+                        : altitude > cfg.high_rock_level ? Biomes::HIGH_ROCK
+                        : altitude > cfg.rock_level ? Biomes::ROCK
                         : moisture > 0.3 ? Biomes::SWAMP
                         : moisture > 0.1 ? Biomes::FOREST
                         : moisture > -0.1 ? Biomes::FIELD
