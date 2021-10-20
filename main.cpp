@@ -15,7 +15,8 @@ void print_help() {
               << "        seed=<seed> (seed is a 64-bit number)\n"
               << "        width=<width>\n"
               << "        height=<height>\n"
-              << "        output=<output file>\n";
+              << "        output=<output file>\n"
+              << "        sea-level=<level> a number between -0.5 and 0.5\n";
 }
 
 int main(int argc, char **argv)
@@ -57,12 +58,17 @@ int main(int argc, char **argv)
             cfg.height = std::strtoul(args.params["height"].c_str(), NULL, 10);
         }
 
+        if (args.params.find("sea-level") != args.params.end()) {
+            cfg.sea_level = std::stof(args.params["sea-level"].c_str(), NULL);
+        }
+
         if (args.params.find("output") != args.params.end()) {
             output_file = args.params["output"];
         }
 
         std::cout << "Generating map with seed " << cfg.seed << "\n"
                   << "width x height = " << cfg.width << " x " << cfg.height << "\n"
+                  << "sea level = " << cfg.sea_level << "\n"
                   << "output file = " << output_file << "\n";
 
         Cinder::Map map(cfg);

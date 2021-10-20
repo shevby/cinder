@@ -25,6 +25,7 @@ struct MapConfig {
     uint64_t seed;
     uint32_t width  = 512;
     uint32_t height = 512;
+    float sea_level = 0;
 };
 
 struct Map {

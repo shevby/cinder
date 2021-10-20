@@ -24,7 +24,7 @@ Map::Map(const MapConfig &cfg) :
                 perlin(seed + 400000 + 0.001 * x + 0.111, seed + 40000 + 0.001 * y + 0.1111)
             );
 
-            Biomes biom = altitude < 0 ? temperature > -0.3 ? Biomes::WATER : Biomes::GLACIER
+            Biomes biom = altitude < cfg.sea_level ? temperature > -0.3 ? Biomes::WATER : Biomes::GLACIER
                         : altitude > 0.35 ? Biomes::HIGH_ROCK
                         : altitude > 0.25 ? Biomes::ROCK
                         : moisture > 0.3 ? Biomes::SWAMP
