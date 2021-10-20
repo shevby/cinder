@@ -247,7 +247,7 @@ void run_sin_parser_tests() {
     std::vector<parsed_sin> sins6;
     bool ret6 = parse_sins(ss6, sins6);
     bool_assert(ret6, "test 6: not parsed");
-    if (sins6.size() != 2) {
+    if (sins6.size() != 3) {
         std::cout << "test 6: 2 items expected, " << sins6.size() << " found\n";
     }
     str_assert(sins6[0].name, "foo", "test 6/1");
