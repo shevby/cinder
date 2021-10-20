@@ -1,9 +1,14 @@
 #include <cstdio>
+#include <math.h>
 
 #include "map.h"
 #include "perlin_noise.h"
 
 namespace Cinder {
+
+static float interpolate(float left, float right, float quotient) {
+    return (1 - quotient) * left + quotient * right;
+}
 
 Map::Map(const MapConfig &cfg) :
     width(cfg.width),
@@ -16,8 +21,14 @@ Map::Map(const MapConfig &cfg) :
     #pragma omp parallel for
     for (size_t x = 0; x < width; ++x) {
         for (size_t y = 0; y < height; ++y) {
+            float latitude = 2*std::abs(x - (double)height/2)/height; // 0 = equator, 1 = pole
+
             float temperature = perlin(seed + 0.03 * x + 0.5, seed + 0.03 * y + 0.5);
-            float moisture    = perlin(seed + 5000 + 0.02 * x + 0.111, seed + 5000 + 0.02 * y + 0.1111);
+            float moisture    = interpolate(
+                                    perlin(seed + 5000 + 0.02 * x + 0.111, seed + 5000 + 0.02 * y + 0.1111),
+                                    0.5 - latitude,
+                                    cfg.wet_equator
+                                );
             float altitude    = 0.25 * (
                 perlin(seed + 100000 + 0.1 * x + 0.111, seed + 10000 + 0.1 * y + 0.1111) +
                 perlin(seed + 200000 + 0.01 * x + 0.111, seed + 20000 + 0.01 * y + 0.1111) +

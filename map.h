@@ -28,6 +28,7 @@ struct MapConfig {
     float sea_level = 0;
     float high_rock_level = 0.35;
     float rock_level = 0.25;
+    float wet_equator = 0.5;
 };
 
 struct Map {

@@ -18,7 +18,8 @@ void print_help() {
               << "        output=<output file>\n"
               << "        sea-level=<level> a number between -0.5 and 0.5\n"
               << "        high-rock-level=<level>\n"
-              << "        rock-level=<level>\n";
+              << "        rock-level=<level>\n"
+              << "        wet-equator=<number> number between 0 and 1. 0 - ignore latitude; 1 - equators are wet, poles are dry\n";
 }
 
 int main(int argc, char **argv)
@@ -70,6 +71,10 @@ int main(int argc, char **argv)
 
         if (args.params.find("rock-level") != args.params.end()) {
             cfg.rock_level = std::stof(args.params["rock-level"].c_str(), NULL);
+        }
+
+        if (args.params.find("wet-equator") != args.params.end()) {
+            cfg.wet_equator = std::stof(args.params["wet-equator"].c_str(), NULL);
         }
 
         if (args.params.find("output") != args.params.end()) {
