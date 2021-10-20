@@ -5,12 +5,14 @@
 
 namespace Cinder {
 
-Map::Map(uint32_t _width, uint32_t _height, uint64_t seed) :
-    width(_width),
-    height(_height),
+Map::Map(const MapConfig &cfg) :
+    width(cfg.width),
+    height(cfg.height),
     map(new uint8_t[width * height]),
     mapType(MapTypes::WORLD_MAP)
 {
+    auto seed = cfg.seed;
+
     for (size_t x = 0; x < width; ++x) {
         for (size_t y = 0; y < height; ++y) {
             float temperature = perlin(seed + 0.03 * x + 0.5, seed + 0.03 * y + 0.5);
