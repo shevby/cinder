@@ -21,13 +21,23 @@ enum class MapTypes {
     CELL_MAP
 };
 
+struct MapConfig {
+    uint64_t seed;
+    uint32_t width  = 512;
+    uint32_t height = 512;
+    float sea_level = 0;
+    float high_rock_level = 0.35;
+    float rock_level = 0.25;
+    float wet_equator = 0.5;
+};
+
 struct Map {
     MapTypes mapType;
     uint32_t width;
     uint32_t height;
     uint8_t * map;
 
-    Map(uint32_t _width, uint32_t _height, uint64_t _seed);
+    Map(const MapConfig &cfg);
     ~Map();
 
     void save_to_file(const char *filename);
