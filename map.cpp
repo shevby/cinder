@@ -100,7 +100,11 @@ Map::Map(const MapConfig &cfg) :
         }
     }
 
+    std::vector<std::pair<uint32_t, uint32_t>> river_mouths;
+
+    #pragma omp parallel
     for (size_t x = 0; x < width; ++x) {
+        std::vector<std::pair<uint32_t, uint32_t>> river_mouths_thread_data;
         for (size_t y = 0; y < height; ++y) {
             // skip tile if there is a river
             if (rivers[x * height + y].riverExit != TileBorder::NONE)
@@ -142,9 +146,14 @@ Map::Map(const MapConfig &cfg) :
             // choose a random water neighbour as river mouth
             size_t idx = rand.rand() % water_nearby.size();
             rivers[x * height + y].riverExit = border;
-
-            generate_river_starting_from(x, y);
         }
+
+        #pragma omp critical
+        river_mouths.insert(river_mouths_thread_data.end(), river_mouths_thread_data.begin(), river_mouths_thread_data.end());
+    }
+
+    for (const auto &river_mouth : river_mouths) {
+        generate_river_starting_from(river_mouth.first, river_mouth.second);
     }
 
     #pragma omp parallel for
