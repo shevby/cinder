@@ -1,10 +1,10 @@
 #include <cstdio>
 #include <math.h>
 #include <vector>
+#include <iostream>
 
 #include "map.h"
 #include "perlin_noise.h"
-#include "stable_random.h"
 
 namespace Cinder {
 
@@ -21,16 +21,59 @@ float Map::get_altitude(uint32_t x, uint32_t y) {
     );
 }
 
+void Map::generate_river_starting_from(uint32_t x, uint32_t y) {
+    uint32_t x_prev = x;
+    uint32_t y_prev = y;
+
+    while (true) {
+        // choose the next tile
+        std::vector<std::pair<uint32_t, uint32_t>> neightbour_candidates = {
+            {x_prev - 1, y_prev},
+            {x_prev + 1, y_prev},
+            {x_prev, y_prev - 1},
+            {x_prev, y_prev + 1}
+        };
+
+        std::vector<std::pair<uint32_t, uint32_t>> neightbours_to_choose;
+        for (const auto &candidate : neightbour_candidates) {
+            uint32_t candidate_x = candidate.first;
+            uint32_t candidate_y = candidate.second;
+
+            if ((candidate_x < 0) || (candidate_x >= height) || (candidate_y < 0) || (candidate_y >= width)) {
+                continue;
+            }
+
+            if (get_altitude(candidate_x, candidate_y) <= get_altitude(x_prev, y_prev)) {
+                continue;
+            }
+
+            neightbours_to_choose.push_back(candidate);
+        }
+
+        if (neightbours_to_choose.size() == 0) {
+            // Impossible to add yet another tile to the river
+            break;
+        }
+
+        auto next_tile = neightbours_to_choose[rand.rand() % neightbours_to_choose.size()];
+        // TODO fix river direction
+        rivers[x_prev * height + y_prev].riverEntry = TileBorder::TOP;
+        rivers[next_tile.first * height + next_tile.second].riverExit = TileBorder::BOTTOM;
+
+        x_prev = next_tile.first;
+        y_prev = next_tile.second;
+    }
+}
+
 Map::Map(const MapConfig &cfg) :
     width(cfg.width),
     height(cfg.height),
     map(new uint8_t[width * height]),
     rivers(new River[width * height]),
     mapType(MapTypes::WORLD_MAP),
-    seed(cfg.seed)
+    seed(cfg.seed),
+    rand(cfg.seed)
 {
-    Random rand(seed);
-
     #pragma omp parallel for
     for (size_t x = 0; x < width; ++x) {
         for (size_t y = 0; y < height; ++y) {
@@ -100,50 +143,11 @@ Map::Map(const MapConfig &cfg) :
             size_t idx = rand.rand() % water_nearby.size();
             rivers[x * height + y].riverExit = border;
 
-            uint32_t x_prev = x;
-            uint32_t y_prev = y;
-
-            while (true) {
-                // choose the next tile
-                std::vector<std::pair<uint32_t, uint32_t>> neightbour_candidates = {
-                    {x_prev - 1, y_prev},
-                    {x_prev + 1, y_prev},
-                    {x_prev, y_prev - 1},
-                    {x_prev, y_prev + 1}
-                };
-
-                std::vector<std::pair<uint32_t, uint32_t>> neightbours_to_choose;
-                for (const auto &candidate : neightbour_candidates) {
-                    uint32_t candidate_x = candidate.first;
-                    uint32_t candidate_y = candidate.second;
-
-                    if ((candidate_x < 0) || (candidate_x >= height) || (candidate_y < 0) || (candidate_y >= width)) {
-                        continue;
-                    }
-
-                    if (get_altitude(candidate_x, candidate_y) <= get_altitude(x_prev, y_prev)) {
-                        continue;
-                    }
-
-                    neightbours_to_choose.push_back(candidate);
-                }
-
-                if (neightbours_to_choose.size() == 0) {
-                    // Impossible to add yet another tile to the river
-                    break;
-                }
-
-                auto next_tile = neightbours_to_choose[rand.rand() % neightbours_to_choose.size()];
-                // TODO fix river direction
-                rivers[x_prev * height + y_prev].riverEntry = TileBorder::TOP;
-                rivers[next_tile.first * height + next_tile.second].riverExit = TileBorder::BOTTOM;
-
-                x_prev = next_tile.first;
-                y_prev = next_tile.second;
-            }
+            generate_river_starting_from(x, y);
         }
     }
 
+    #pragma omp parallel for
     for (size_t x = 0; x < width; ++x) {
         for (size_t y = 0; y < height; ++y) {
             auto idx = x * height + y;

@@ -2,6 +2,8 @@
 
 #include <cstdint>
 
+#include "stable_random.h"
+
 namespace Cinder {
 
 enum class Biomes {
@@ -51,6 +53,7 @@ struct Map {
     uint32_t height;
     uint8_t * map;
     River *rivers;
+    Random rand;
 
     uint64_t seed;
 
@@ -58,6 +61,8 @@ struct Map {
     ~Map();
 
     float get_altitude(uint32_t x, uint32_t y);
+    void generate_river_starting_from(uint32_t x, uint32_t y);
+
     void save_to_file(const char *filename);
     void load_from_file(const char *filename);
 };
