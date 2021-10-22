@@ -29,6 +29,7 @@ void print_help() {
               << "        sea-level=<level> a number between -0.5 and 0.5\n"
               << "        high-rock-level=<level>\n"
               << "        rock-level=<level>\n"
+              << "        river-density=<density> number between 0 and 1. Percentage of shores that have river mouth\n"
               << "        wet-equator=<number> number between 0 and 1. 0 - ignore latitude; 1 - equators are wet, poles are dry\n";
 }
 
@@ -69,6 +70,7 @@ int main(int argc, char **argv)
 
         FLOAT_PARAM(cfg.high_rock_level, "high-rock-level")
         FLOAT_PARAM(cfg.rock_level, "rock-level")
+        FLOAT_PARAM(cfg.river_density, "river-density")
         FLOAT_PARAM(cfg.wet_equator, "wet-equator")
 
         if (args.params.find("output") != args.params.end()) {

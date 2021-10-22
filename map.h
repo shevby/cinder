@@ -16,6 +16,19 @@ enum class Biomes {
     SAVANNA,
 };
 
+enum class TileBorder {
+    NONE = 0,
+    LEFT,
+    RIGHT,
+    TOP,
+    BOTTOM
+};
+
+struct River {
+    TileBorder riverEntry;
+    TileBorder riverExit;
+};
+
 enum class MapTypes {
     WORLD_MAP,
     CELL_MAP
@@ -29,6 +42,7 @@ struct MapConfig {
     float high_rock_level = 0.35;
     float rock_level = 0.25;
     float wet_equator = 0.5;
+    float river_density = 0.1;
 };
 
 struct Map {
@@ -36,10 +50,14 @@ struct Map {
     uint32_t width;
     uint32_t height;
     uint8_t * map;
+    River *rivers;
+
+    uint64_t seed;
 
     Map(const MapConfig &cfg);
     ~Map();
 
+    float get_altitude(uint32_t x, uint32_t y);
     void save_to_file(const char *filename);
     void load_from_file(const char *filename);
 };
