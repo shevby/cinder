@@ -26,6 +26,80 @@ enum class TileBorder {
     BOTTOM
 };
 
+enum class LocationTiles {
+    WATER = 0,
+    GRAVEL,
+    GROUND,
+    GRASS,
+    SAND,
+    ROCK,
+    LAVA,
+    ICE,
+    SNOW,
+    DIRT
+};
+
+enum class NaturalObjects {
+
+    TREE_BEGIN = 0,
+    OAK = TREE_BEGIN,
+    MAPLE,
+    SAKURA,
+    PINE,
+    MAHOGANY,
+    PALM,
+    COCOA,
+    TREE_END,
+
+    BUSH_BEGIN,
+    HOPS = BUSH_BEGIN,
+    GRAPE,
+    LILAC,
+    WEED,
+    BUSH_END,
+
+    VEGETABLES_BEGIN,
+    POTATO = VEGETABLES_BEGIN,
+    CARROT,
+    CABBAGE,
+    SUNFLOWER,
+    VEGETABLES_END,
+
+    MASHROOMS_BEGIN,
+    BOLETUS = MASHROOMS_BEGIN,
+    FLY_AGARIC,
+    SHROOMS,
+    MASHROOMS_END,
+
+    ORES_BEGIN,
+    STONE=ORES_BEGIN,
+    COAL,
+    DIAMOND,
+    IRON,
+    COPPER,
+    COFFEE,
+    SAND,
+    GROUND,
+    CINDER, //Something like Spice from Dune
+    ORES_END
+};
+
+enum class RiverDirection {
+    NO_RIVER = 0,
+    TOP_DOWN,
+    DOWN_TOP = TOP_DOWN,
+    TOP_LEFT,
+    LEFT_TOP = TOP_LEFT,
+    TOP_RIGHT,
+    RIGHT_TOP = TOP_RIGHT,
+    LEFT_RIGHT,
+    RIGHT_LEFT = LEFT_RIGHT,
+    RIGHT_DOWN,
+    DOWN_RIGHT = RIGHT_DOWN,
+    LEFT_DOWN,
+    DOWN_LEFT = LEFT_DOWN
+};
+
 struct River {
     TileBorder riverEntry;
     TileBorder riverExit;
