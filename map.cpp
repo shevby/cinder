@@ -68,7 +68,7 @@ void Map::generate_river_starting_from(uint32_t x, uint32_t y) {
 Map::Map(const MapConfig &cfg) :
     width(cfg.width),
     height(cfg.height),
-    map(new uint8_t[width * height]),
+    map(new BiomeCell[width * height]),
     rivers(new River[width * height]),
     mapType(MapTypes::WORLD_MAP),
     seed(cfg.seed),
@@ -96,7 +96,7 @@ Map::Map(const MapConfig &cfg) :
                         : moisture > -0.2 ? Biomes::SAVANNA
                         : Biomes::DESERT;
 
-            map[x * height + y] = static_cast<uint8_t>(biom);
+            map[x * height + y].tile = biom;
         }
     }
 
@@ -111,28 +111,28 @@ Map::Map(const MapConfig &cfg) :
                 continue;
 
             // skip water tile
-            if (map[x * height + y] == static_cast<uint8_t>(Biomes::WATER))
+            if (map[x * height + y].tile == Biomes::WATER)
                 continue;
-            if (map[x * height + y] == static_cast<uint8_t>(Biomes::GLACIER))
+            if (map[x * height + y].tile == Biomes::GLACIER)
                 continue;
 
             // find a tile on a shore
 
             std::vector<std::pair<uint32_t, uint32_t>> water_nearby;
             TileBorder border;
-            if (x >= 1 && map[(x-1) * height + y] == static_cast<uint8_t>(Biomes::WATER)) {
+            if (x >= 1 && map[(x-1) * height + y].tile == Biomes::WATER) {
                 water_nearby.push_back(std::make_pair(x-1, y));
                 border = TileBorder::LEFT;
             }
-            if (x < height - 1 && map[(x+1) * height + y] == static_cast<uint8_t>(Biomes::WATER)) {
+            if (x < height - 1 && map[(x+1) * height + y].tile == Biomes::WATER) {
                 water_nearby.push_back(std::make_pair(x+1, y));
                 border = TileBorder::RIGHT;
             }
-            if (y >= 1 && map[x * height + y - 1] == static_cast<uint8_t>(Biomes::WATER)) {
+            if (y >= 1 && map[x * height + y - 1].tile == Biomes::WATER) {
                 water_nearby.push_back(std::make_pair(x, y-1));
                 border = TileBorder::TOP;
             }
-            if (y < width - 1 && map[x * height + y + 1] == static_cast<uint8_t>(Biomes::WATER)) {
+            if (y < width - 1 && map[x * height + y + 1].tile == Biomes::WATER) {
                 water_nearby.push_back(std::make_pair(x, y+1));
                 border = TileBorder::BOTTOM;
             }
@@ -161,7 +161,7 @@ Map::Map(const MapConfig &cfg) :
         for (size_t y = 0; y < height; ++y) {
             auto idx = x * height + y;
             if (rivers[idx].riverExit != TileBorder::NONE) {
-                map[idx] = static_cast<uint8_t>(Biomes::WATER);
+                map[idx].tile = Biomes::WATER;
             }
         }
     }
@@ -199,7 +199,7 @@ void Map::load_from_file(const char *filename) {
     fread(&height, sizeof(uint32_t), 1, f);
     fread(&width, sizeof(uint32_t), 1, f);
 
-    map = new uint8_t[width * height];
+    map = new BiomeCell[width * height];
     fread(map, sizeof(uint8_t), width * height, f);
 }
 

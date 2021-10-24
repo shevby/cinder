@@ -100,6 +100,15 @@ enum class RiverDirection {
     DOWN_LEFT = LEFT_DOWN
 };
 
+#pragma pack(push, 1)
+struct BiomeCell {
+    Biomes tile: 5;
+    RiverDirection river: 3;
+};
+#pragma pack(pop)
+
+static_assert(sizeof(BiomeCell) == 1, "BiomeCell is expected to occupy 1 byte");
+
 struct River {
     TileBorder riverEntry;
     TileBorder riverExit;
@@ -125,7 +134,7 @@ struct Map {
     MapTypes mapType;
     uint32_t width;
     uint32_t height;
-    uint8_t * map;
+    BiomeCell *map;
     River *rivers;
     Random rand;
 
