@@ -110,7 +110,7 @@ Map::Map(const MapConfig &cfg) :
 
     std::vector<std::pair<uint32_t, uint32_t>> river_mouths;
 
-    #pragma omp parallel
+    #pragma omp parallel for
     for (size_t x = 0; x < width; ++x) {
         std::vector<std::pair<uint32_t, uint32_t>> river_mouths_thread_data;
         for (size_t y = 0; y < height; ++y) {
@@ -148,16 +148,18 @@ Map::Map(const MapConfig &cfg) :
             if (water_nearby.size() == 0)
                 continue;
 
-            if (rand.rand() < (uint64_t(-1)) * cfg.river_density)
+            if (rand.rand() > (uint64_t(-1)) * cfg.river_density)
                 continue;
 
             // choose a random water neighbour as river mouth
             size_t idx = rand.rand() % water_nearby.size();
             rivers[x * height + y].riverExit = border;
+
+            river_mouths_thread_data.push_back(std::pair(x, y));
         }
 
         #pragma omp critical
-        river_mouths.insert(river_mouths_thread_data.end(), river_mouths_thread_data.begin(), river_mouths_thread_data.end());
+        river_mouths.insert(river_mouths.end(), river_mouths_thread_data.begin(), river_mouths_thread_data.end());
     }
 
     for (const auto &river_mouth : river_mouths) {
@@ -169,7 +171,7 @@ Map::Map(const MapConfig &cfg) :
         for (size_t y = 0; y < height; ++y) {
             auto idx = x * height + y;
             if (rivers[idx].riverExit != TileBorder::NONE) {
-                map[idx].tile = Biomes::WATER;
+                map[idx].tile = idx % 2 ? Biomes::WATER : Biomes::SWAMP;
             }
 
             static std::vector<std::vector<RiverDirection>> river_conversion = {
