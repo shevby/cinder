@@ -68,12 +68,20 @@ void Map::generate_river_starting_from(uint32_t x, uint32_t y) {
 Map::Map(const MapConfig &cfg) :
     width(cfg.width),
     height(cfg.height),
-    map(new uint8_t[width * height]),
+    map(new BiomeCell[width * height]),
     rivers(new River[width * height]),
     mapType(MapTypes::WORLD_MAP),
     seed(cfg.seed),
     rand(cfg.seed)
 {
+    #pragma omp parallel for
+    for (size_t x = 0; x < width; ++x) {
+        for (size_t y = 0; y < height; ++y) {
+            rivers[x * height + y].riverEntry = TileBorder::NONE;
+            rivers[x * height + y].riverExit  = TileBorder::NONE;
+        }
+    }
+
     #pragma omp parallel for
     for (size_t x = 0; x < width; ++x) {
         for (size_t y = 0; y < height; ++y) {
@@ -96,13 +104,13 @@ Map::Map(const MapConfig &cfg) :
                         : moisture > -0.2 ? Biomes::SAVANNA
                         : Biomes::DESERT;
 
-            map[x * height + y] = static_cast<uint8_t>(biom);
+            map[x * height + y].tile = biom;
         }
     }
 
     std::vector<std::pair<uint32_t, uint32_t>> river_mouths;
 
-    #pragma omp parallel
+    #pragma omp parallel for
     for (size_t x = 0; x < width; ++x) {
         std::vector<std::pair<uint32_t, uint32_t>> river_mouths_thread_data;
         for (size_t y = 0; y < height; ++y) {
@@ -111,28 +119,28 @@ Map::Map(const MapConfig &cfg) :
                 continue;
 
             // skip water tile
-            if (map[x * height + y] == static_cast<uint8_t>(Biomes::WATER))
+            if (map[x * height + y].tile == Biomes::WATER)
                 continue;
-            if (map[x * height + y] == static_cast<uint8_t>(Biomes::GLACIER))
+            if (map[x * height + y].tile == Biomes::GLACIER)
                 continue;
 
             // find a tile on a shore
 
             std::vector<std::pair<uint32_t, uint32_t>> water_nearby;
             TileBorder border;
-            if (x >= 1 && map[(x-1) * height + y] == static_cast<uint8_t>(Biomes::WATER)) {
+            if (x >= 1 && map[(x-1) * height + y].tile == Biomes::WATER) {
                 water_nearby.push_back(std::make_pair(x-1, y));
                 border = TileBorder::LEFT;
             }
-            if (x < height - 1 && map[(x+1) * height + y] == static_cast<uint8_t>(Biomes::WATER)) {
+            if (x < height - 1 && map[(x+1) * height + y].tile == Biomes::WATER) {
                 water_nearby.push_back(std::make_pair(x+1, y));
                 border = TileBorder::RIGHT;
             }
-            if (y >= 1 && map[x * height + y - 1] == static_cast<uint8_t>(Biomes::WATER)) {
+            if (y >= 1 && map[x * height + y - 1].tile == Biomes::WATER) {
                 water_nearby.push_back(std::make_pair(x, y-1));
                 border = TileBorder::TOP;
             }
-            if (y < width - 1 && map[x * height + y + 1] == static_cast<uint8_t>(Biomes::WATER)) {
+            if (y < width - 1 && map[x * height + y + 1].tile == Biomes::WATER) {
                 water_nearby.push_back(std::make_pair(x, y+1));
                 border = TileBorder::BOTTOM;
             }
@@ -140,16 +148,18 @@ Map::Map(const MapConfig &cfg) :
             if (water_nearby.size() == 0)
                 continue;
 
-            if (rand.rand() < (uint64_t(-1)) * cfg.river_density)
+            if (rand.rand() > (uint64_t(-1)) * cfg.river_density)
                 continue;
 
             // choose a random water neighbour as river mouth
             size_t idx = rand.rand() % water_nearby.size();
             rivers[x * height + y].riverExit = border;
+
+            river_mouths_thread_data.push_back(std::pair(x, y));
         }
 
         #pragma omp critical
-        river_mouths.insert(river_mouths_thread_data.end(), river_mouths_thread_data.begin(), river_mouths_thread_data.end());
+        river_mouths.insert(river_mouths.end(), river_mouths_thread_data.begin(), river_mouths_thread_data.end());
     }
 
     for (const auto &river_mouth : river_mouths) {
@@ -161,10 +171,23 @@ Map::Map(const MapConfig &cfg) :
         for (size_t y = 0; y < height; ++y) {
             auto idx = x * height + y;
             if (rivers[idx].riverExit != TileBorder::NONE) {
-                map[idx] = static_cast<uint8_t>(Biomes::WATER);
+                map[idx].tile = idx % 2 ? Biomes::WATER : Biomes::SWAMP;
             }
+
+            static std::vector<std::vector<RiverDirection>> river_conversion = {
+                                     /* NONE */               /* LEFT */                   /* RIGHT */                 /* TOP */                /* BOTTOM */
+                /* NONE */   {RiverDirection::NO_RIVER, RiverDirection::NO_RIVER,   RiverDirection::NO_RIVER,   RiverDirection::NO_RIVER,  RiverDirection::NO_RIVER},
+                /* LEFT */   {RiverDirection::NO_RIVER, RiverDirection::NO_RIVER,   RiverDirection::LEFT_RIGHT, RiverDirection::LEFT_TOP,  RiverDirection::LEFT_DOWN},
+                /* RIGHT */  {RiverDirection::NO_RIVER, RiverDirection::RIGHT_LEFT, RiverDirection::NO_RIVER,   RiverDirection::RIGHT_TOP, RiverDirection::RIGHT_DOWN},
+                /* TOP */    {RiverDirection::NO_RIVER, RiverDirection::TOP_LEFT,   RiverDirection::TOP_RIGHT,  RiverDirection::NO_RIVER,  RiverDirection::TOP_DOWN},
+                /* BOTTOM */ {RiverDirection::NO_RIVER, RiverDirection::DOWN_LEFT,  RiverDirection::DOWN_RIGHT, RiverDirection::DOWN_TOP,  RiverDirection::NO_RIVER}
+            };
+
+            map[idx].river = river_conversion[static_cast<uint8_t>(rivers[idx].riverEntry)][static_cast<uint8_t>(rivers[idx].riverExit)];
         }
     }
+
+    delete[] rivers;
 }
 
 Map::~Map() {
@@ -199,7 +222,7 @@ void Map::load_from_file(const char *filename) {
     fread(&height, sizeof(uint32_t), 1, f);
     fread(&width, sizeof(uint32_t), 1, f);
 
-    map = new uint8_t[width * height];
+    map = new BiomeCell[width * height];
     fread(map, sizeof(uint8_t), width * height, f);
 }
 
