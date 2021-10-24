@@ -77,6 +77,14 @@ Map::Map(const MapConfig &cfg) :
     #pragma omp parallel for
     for (size_t x = 0; x < width; ++x) {
         for (size_t y = 0; y < height; ++y) {
+            rivers[x * height + y].riverEntry = TileBorder::NONE;
+            rivers[x * height + y].riverExit  = TileBorder::NONE;
+        }
+    }
+
+    #pragma omp parallel for
+    for (size_t x = 0; x < width; ++x) {
+        for (size_t y = 0; y < height; ++y) {
             float latitude = 2*std::abs(x - (double)height/2)/height; // 0 = equator, 1 = pole
 
             float temperature = perlin(seed + 0.03 * x + 0.5, seed + 0.03 * y + 0.5);
@@ -163,8 +171,21 @@ Map::Map(const MapConfig &cfg) :
             if (rivers[idx].riverExit != TileBorder::NONE) {
                 map[idx].tile = Biomes::WATER;
             }
+
+            static std::vector<std::vector<RiverDirection>> river_conversion = {
+                                     /* NONE */               /* LEFT */                   /* RIGHT */                 /* TOP */                /* BOTTOM */
+                /* NONE */   {RiverDirection::NO_RIVER, RiverDirection::NO_RIVER,   RiverDirection::NO_RIVER,   RiverDirection::NO_RIVER,  RiverDirection::NO_RIVER},
+                /* LEFT */   {RiverDirection::NO_RIVER, RiverDirection::NO_RIVER,   RiverDirection::LEFT_RIGHT, RiverDirection::LEFT_TOP,  RiverDirection::LEFT_DOWN},
+                /* RIGHT */  {RiverDirection::NO_RIVER, RiverDirection::RIGHT_LEFT, RiverDirection::NO_RIVER,   RiverDirection::RIGHT_TOP, RiverDirection::RIGHT_DOWN},
+                /* TOP */    {RiverDirection::NO_RIVER, RiverDirection::TOP_LEFT,   RiverDirection::TOP_RIGHT,  RiverDirection::NO_RIVER,  RiverDirection::TOP_DOWN},
+                /* BOTTOM */ {RiverDirection::NO_RIVER, RiverDirection::DOWN_LEFT,  RiverDirection::DOWN_RIGHT, RiverDirection::DOWN_TOP,  RiverDirection::NO_RIVER}
+            };
+
+            map[idx].river = river_conversion[static_cast<uint8_t>(rivers[idx].riverEntry)][static_cast<uint8_t>(rivers[idx].riverExit)];
         }
     }
+
+    delete[] rivers;
 }
 
 Map::~Map() {
