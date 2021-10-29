@@ -1,0 +1,3 @@
+[submodule "libs/sin"]
+	path = libs/sin
+	url = https://github.com/shevby/sin
