@@ -16,18 +16,25 @@ set(SOURCES
     arg_parser.cpp
     )
 
-set(HEADERS
-    map.h
-    stable_random.h
-    sin_parser.h
-    perlin_noise.h
-    arg_parser.h
-    )
+
+set(LIBS
+    libs/sin
+)
+
 
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 
-add_executable(cinder ${SOURCES} ${HEADERS})
+add_executable(cinder ${SOURCES})
+
+target_include_directories(cinder PUBLIC
+    ${CMAKE_SOURCE_DIR}
+    libs/
+)
+
+add_subdirectory(${LIBS})
+
+target_link_libraries(cinder PUBLIC sin)
 
 if(OpenMP_CXX_FOUND)
     target_link_libraries(cinder PUBLIC OpenMP::OpenMP_CXX)

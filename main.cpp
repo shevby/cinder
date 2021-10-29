@@ -4,6 +4,7 @@
 #include "arg_parser.h"
 #include "map.h"
 #include "sin_parser.h"
+#include "sin/sin.h"
 
 #define INT_PARAM(DEST, NAME) \
     if (args.params.find(NAME) != args.params.end()) { \
@@ -35,6 +36,8 @@ void print_help() {
 
 int main(int argc, char **argv)
 {
+    return testSin();
+    
     arg_parser args(argc, argv);
 
     if (args.cmd == "") {
