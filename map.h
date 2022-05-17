@@ -147,7 +147,6 @@ struct Map {
     void generate_river_starting_from(uint32_t x, uint32_t y);
 
     void save_to_file(const char *filename);
-    void load_from_file(const char *filename);
 };
 
 }; // namespace Cinder

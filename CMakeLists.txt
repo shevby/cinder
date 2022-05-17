@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(cinder LANGUAGES CXX)
+project(generate-map LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -8,10 +8,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(OpenMP REQUIRED)
 
 set(SOURCES
-    main.cpp
+    map_generator_cli.cpp
     stable_random.cpp
     map.cpp
-    sin_parser.cpp
     perlin_noise.cpp
     arg_parser.cpp
     )
@@ -19,7 +18,6 @@ set(SOURCES
 set(HEADERS
     map.h
     stable_random.h
-    sin_parser.h
     perlin_noise.h
     arg_parser.h
     )
@@ -27,8 +25,8 @@ set(HEADERS
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 
-add_executable(cinder ${SOURCES} ${HEADERS})
+add_executable(generate-map ${SOURCES} ${HEADERS})
 
 if(OpenMP_CXX_FOUND)
-    target_link_libraries(cinder PUBLIC OpenMP::OpenMP_CXX)
+    target_link_libraries(generate-map PUBLIC OpenMP::OpenMP_CXX)
 endif()
