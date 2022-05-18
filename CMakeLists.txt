@@ -10,13 +10,13 @@ find_package(OpenMP REQUIRED)
 set(SOURCES
     map_generator_cli.cpp
     stable_random.cpp
-    map.cpp
+    MapGenerator.cpp
     perlin_noise.cpp
     arg_parser.cpp
     )
 
 set(HEADERS
-    map.h
+    MapGenerator.h
     stable_random.h
     perlin_noise.h
     arg_parser.h

@@ -2,7 +2,7 @@
 #include <math.h>
 #include <vector>
 
-#include "map.h"
+#include "MapGenerator.h"
 #include "perlin_noise.h"
 
 namespace Cinder {
