@@ -1,4 +1,5 @@
 CMakeLists.txt.user
+bin/
 build/
 .vscode/
 .DS_Store
