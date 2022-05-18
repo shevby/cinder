@@ -12,6 +12,18 @@ namespace Cinder {
         LOCATION_MAP
     };
 
+    enum class Biomes {
+        WATER = 0,
+        FIELD,
+        FOREST,
+        ROCK,
+        HIGH_ROCK,
+        GLACIER,
+        SWAMP,
+        DESERT,
+        SAVANNA,
+    };
+
     enum class RiverDirection {
         TOP_DOWN = 0,
         DOWN_TOP = TOP_DOWN,
@@ -30,8 +42,8 @@ namespace Cinder {
 
 #pragma pack(push, 1)
     struct BiomeCell {
-        uint8_t tile: 5;
-        uint8_t river: 3; //RiverDirection
+        Biomes tile: 5;
+        RiverDirection river: 3; //RiverDirection
         
         friend std::ostream& operator<<(std::ostream& os, const BiomeCell& bc) {
             os << "<BiomCell" << std::endl;
@@ -68,18 +80,6 @@ namespace Cinder {
             outFile.close();
 
         }
-    };
-
-    enum class Biomes {
-        WATER = 0,
-        FIELD,
-        FOREST,
-        ROCK,
-        HIGH_ROCK,
-        GLACIER,
-        SWAMP,
-        DESERT,
-        SAVANNA,
     };
 
     enum class LocationTiles {
@@ -121,11 +121,11 @@ namespace Cinder {
         SUNFLOWER,
         VEGETABLES_END,
 
-        MASHROOMS_BEGIN,
-        BOLETUS = MASHROOMS_BEGIN,
+        MUSHROOMS_BEGIN,
+        BOLETUS = MUSHROOMS_BEGIN,
         FLY_AGARIC,
         SHROOMS,
-        MASHROOMS_END,
+        MUSHROOMS_END,
 
         ORES_BEGIN,
         STONE=ORES_BEGIN,
@@ -148,14 +148,14 @@ namespace Cinder {
         BOTTOM
     };
 
-    struct Biom {
+    struct Biome {
         Biomes biomType;
         bool hasSnow;
         //uint8 hasRiver;
         TileBorder riverEntry;
         TileBorder riverExit;
 
-        Biom(Biomes biomType){
+        Biome(Biomes biomType){
             this->biomType = biomType;
         }
     };

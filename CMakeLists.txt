@@ -20,6 +20,7 @@ set(HEADERS
     stable_random.h
     perlin_noise.h
     arg_parser.h
+    constants.h
     )
 
 
