@@ -38,37 +38,35 @@ int main(int argc, char **argv)
 
     arg_parser args(argc, argv);
 
-    Cinder::MapConfig cfg;
+    Cinder::MapGenerator mapgen;
     std::string output_file = "map.bin";
 
     if (args.params.find("seed") == args.params.end()) {
         srand(time(NULL));
-        cfg.seed = rand();
+        mapgen.seed = rand();
     }
     else {
-        INT_PARAM(cfg.seed, "seed")
+        INT_PARAM(mapgen.seed, "seed")
     }
 
-    INT_PARAM(cfg.width, "width")
-    INT_PARAM(cfg.height, "height")
-    INT_PARAM(cfg.sea_level, "sea-level")
+    INT_PARAM(mapgen.width, "width")
+    INT_PARAM(mapgen.height, "height")
+    INT_PARAM(mapgen.sea_level, "sea-level")
 
-    FLOAT_PARAM(cfg.high_rock_level, "high-rock-level")
-    FLOAT_PARAM(cfg.rock_level, "rock-level")
-    FLOAT_PARAM(cfg.river_density, "river-density")
-    FLOAT_PARAM(cfg.wet_equator, "wet-equator")
+    FLOAT_PARAM(mapgen.high_rock_level, "high-rock-level")
+    FLOAT_PARAM(mapgen.rock_level, "rock-level")
+    FLOAT_PARAM(mapgen.river_density, "river-density")
+    FLOAT_PARAM(mapgen.wet_equator, "wet-equator")
 
     if (args.params.find("output") != args.params.end()) {
         output_file = args.params["output"];
     }
 
-    std::cout << "Generating map with seed " << cfg.seed << "\n"
-              << "width x height = " << cfg.width << " x " << cfg.height << "\n"
-              << "sea level = " << cfg.sea_level << "\n"
+    std::cout << "Generating map with seed " << mapgen.seed << "\n"
+              << "width x height = " << mapgen.width << " x " << mapgen.height << "\n"
+              << "sea level = " << mapgen.sea_level << "\n"
               << "output file = " << output_file << "\n";
 
-    Cinder::Map map(cfg);
-
-    map.save_to_file(output_file.c_str());
+    mapgen.save_to_file(output_file.c_str());
     return 0;
 }

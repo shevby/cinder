@@ -119,7 +119,7 @@ enum class MapTypes {
     CELL_MAP
 };
 
-struct MapConfig {
+struct MapGenerator {
     uint64_t seed;
     uint32_t width  = 512;
     uint32_t height = 512;
@@ -128,24 +128,16 @@ struct MapConfig {
     float rock_level = 0.25;
     float wet_equator = 0.5;
     float river_density = 0.1;
-};
 
-struct Map {
-    MapTypes mapType;
-    uint32_t width;
-    uint32_t height;
+    MapTypes mapType = MapTypes::WORLD_MAP;
     BiomeCell *map;
     River *rivers;
     Random rand;
 
-    uint64_t seed;
-
-    Map(const MapConfig &cfg);
-    ~Map();
-
     float get_altitude(uint32_t x, uint32_t y);
     void generate_river_starting_from(uint32_t x, uint32_t y);
 
+    void generate_map();
     void save_to_file(const char *filename);
 };
 

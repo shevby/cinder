@@ -11,7 +11,7 @@ static float interpolate(float left, float right, float quotient) {
     return (1 - quotient) * left + quotient * right;
 }
 
-float Map::get_altitude(uint32_t x, uint32_t y) {
+float MapGenerator::get_altitude(uint32_t x, uint32_t y) {
     return 0.25 * (
         perlin(seed + 100000 + 0.1 * x + 0.111, seed + 10000 + 0.1 * y + 0.1111) +
         perlin(seed + 200000 + 0.01 * x + 0.111, seed + 20000 + 0.01 * y + 0.1111) +
@@ -20,7 +20,7 @@ float Map::get_altitude(uint32_t x, uint32_t y) {
     );
 }
 
-void Map::generate_river_starting_from(uint32_t x, uint32_t y) {
+void MapGenerator::generate_river_starting_from(uint32_t x, uint32_t y) {
     uint32_t x_prev = x;
     uint32_t y_prev = y;
 
@@ -64,15 +64,11 @@ void Map::generate_river_starting_from(uint32_t x, uint32_t y) {
     }
 }
 
-Map::Map(const MapConfig &cfg) :
-    width(cfg.width),
-    height(cfg.height),
-    map(new BiomeCell[width * height]),
-    rivers(new River[width * height]),
-    mapType(MapTypes::WORLD_MAP),
-    seed(cfg.seed),
-    rand(cfg.seed)
-{
+void MapGenerator::generate_map() {
+    map    = new BiomeCell[width * height];
+    rivers = new River[width * height];
+    rand   = Random(seed);
+
     #pragma omp parallel for
     for (size_t x = 0; x < width; ++x) {
         for (size_t y = 0; y < height; ++y) {
@@ -90,13 +86,13 @@ Map::Map(const MapConfig &cfg) :
             float moisture    = interpolate(
                                     perlin(seed + 5000 + 0.02 * x + 0.111, seed + 5000 + 0.02 * y + 0.1111),
                                     0.5 - latitude,
-                                    cfg.wet_equator
+                                    wet_equator
                                 );
             float altitude    = get_altitude(x, y);
 
-            Biomes biom = altitude < cfg.sea_level ? temperature > -0.3 ? Biomes::WATER : Biomes::GLACIER
-                        : altitude > cfg.high_rock_level ? Biomes::HIGH_ROCK
-                        : altitude > cfg.rock_level ? Biomes::ROCK
+            Biomes biom = altitude < sea_level ? temperature > -0.3 ? Biomes::WATER : Biomes::GLACIER
+                        : altitude > high_rock_level ? Biomes::HIGH_ROCK
+                        : altitude > rock_level ? Biomes::ROCK
                         : moisture > 0.3 ? Biomes::SWAMP
                         : moisture > 0.1 ? Biomes::FOREST
                         : moisture > -0.1 ? Biomes::FIELD
@@ -147,7 +143,7 @@ Map::Map(const MapConfig &cfg) :
             if (water_nearby.size() == 0)
                 continue;
 
-            if (rand.rand() > (uint64_t(-1)) * cfg.river_density)
+            if (rand.rand() > (uint64_t(-1)) * river_density)
                 continue;
 
             // choose a random water neighbour as river mouth
@@ -189,11 +185,7 @@ Map::Map(const MapConfig &cfg) :
     delete[] rivers;
 }
 
-Map::~Map() {
-    delete[] map;
-}
-
-void Map::save_to_file(const char *filename) {
+void MapGenerator::save_to_file(const char *filename) {
     FILE *f;
 
     f = fopen(filename, "wb");

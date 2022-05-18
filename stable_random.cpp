@@ -1,5 +1,7 @@
 #include "stable_random.h"
 
+#include <time.h>
+
 namespace Cinder {
 
 static inline uint64_t extract_bit(uint64_t num, int bit) {
@@ -8,6 +10,10 @@ static inline uint64_t extract_bit(uint64_t num, int bit) {
 
 Random::Random(uint64_t seed) {
     state = seed;
+}
+
+Random::Random() {
+    state = time(NULL);
 }
 
 void Random::shift() {
