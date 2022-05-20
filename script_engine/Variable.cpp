@@ -2,7 +2,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include <unordered_map>
+#include <map>
 
 namespace cinder {
 
@@ -31,7 +31,7 @@ std::string Variable::read() {
     return value;
 }
 
-std::unordered_map<std::string, *GenericVariable> variables;
+std::map<std::string, *GenericVariable> variables;
 
 struct SingleScriptLine {
     SingleScriptLine(const std::string &line);
