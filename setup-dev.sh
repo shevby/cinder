@@ -78,15 +78,10 @@ do
             rm -rfv SFML
             printf "\n\n\nSFML has been configured"
             ;;
-            ;;
         2)
             wget -O sfml.tar.gz https://github.com/SFML/SFML/releases/download/2.5.1/SFML-2.5.1-linux-gcc-64-bit.tar.gz
-            7z x sfml.tar.gz
-            rm sfml.tar.gz
-            7z x sfml.tar
-            rm sfml.tar
-            mkdir bin
-            mkdir bin/sfml
+            tar -xf sfml.tar.gz
+            mkdir -p bin/sfml
             mv -v SFML-2.5.1/* bin/sfml/
             rm -rfv SFML-2.5.1
             ;;
