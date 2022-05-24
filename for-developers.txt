@@ -1,0 +1,2 @@
+The coordinates on the map are in the (x, y)/(column, row) form.
+They are counted from the top-left corner of the map.
