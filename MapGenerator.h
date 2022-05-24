@@ -24,6 +24,7 @@ struct MapGenerator {
 
     MapTypes mapType = MapTypes::WORLD_MAP;
     BiomeCell *map;
+    BiomeCell& map_at(size_t x, size_t y);
     River *rivers;
     Random rand;
 

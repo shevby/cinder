@@ -7,6 +7,10 @@
 
 namespace Cinder {
 
+BiomeCell& MapGenerator::map_at(size_t x, size_t y) {
+    return map[x * height + y];
+}
+
 static float interpolate(float left, float right, float quotient) {
     return (1 - quotient) * left + quotient * right;
 }
