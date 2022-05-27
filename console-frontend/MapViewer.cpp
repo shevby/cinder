@@ -5,7 +5,7 @@
 
 namespace Cinder {
 
-MapViewer::MapViewer(MapGenerator _map) : map(_map), x(0), y(0) {}
+MapViewer::MapViewer(std::shared_ptr<Map> _map) : map(_map), x(0), y(0) {}
 
 Character biomeToChar(BiomeCell biome) {
     switch(biome.tile) {
@@ -28,14 +28,14 @@ void MapViewer::draw() {
             move(y_offset, x_offset);
             int map_x = x + x_offset;
             int map_y = y + y_offset;
-            bool out_of_bounds = (map_x < 0) || (map_y < 0) || (map_x >= map.width) || (map_y >= map.height);
+            bool out_of_bounds = (map_x < 0) || (map_y < 0) || (map_x >= map->width) || (map_y >= map->height);
             if (out_of_bounds) {
                 Character ch(' ');
                 ch.display();
                 continue;
             }
-            // Character ch = biomeToChar(map.map_at(map_x, map_y));
-            Character ch = biomeToChar(map.map[map_x * map.height + map_y]);
+            auto m = *map;
+            Character ch = biomeToChar(m[map_x][map_y]);
             ch.display();
         }
     }

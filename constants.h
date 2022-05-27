@@ -58,7 +58,7 @@ namespace Cinder {
 
     static_assert(sizeof(BiomeCell) == sizeof(uint8_t), "BiomCell and uint8_t sizes mismatch");
 
-    struct Map {
+    struct CinderCellEditorMap {
         MapTypes mapType;
         uint32_t width;
         uint32_t height;

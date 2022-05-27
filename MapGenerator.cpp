@@ -7,10 +7,6 @@
 
 namespace Cinder {
 
-BiomeCell& MapGenerator::map_at(size_t x, size_t y) {
-    return map[x * height + y];
-}
-
 static float interpolate(float left, float right, float quotient) {
     return (1 - quotient) * left + quotient * right;
 }
@@ -68,7 +64,7 @@ void MapGenerator::generate_river_starting_from(uint32_t x, uint32_t y) {
     }
 }
 
-void MapGenerator::generate_map() {
+std::shared_ptr<Map> MapGenerator::generate_map() {
     map    = new BiomeCell[width * height];
     rivers = new River[width * height];
     rand   = Random(seed);
@@ -187,6 +183,13 @@ void MapGenerator::generate_map() {
     }
 
     delete[] rivers;
+
+    auto result = std::make_shared<Map>();
+    result->height = height;
+    result->width  = width;
+    result->map    = map;
+
+    return result;
 }
 
 void MapGenerator::save_to_file(const char *filename) {

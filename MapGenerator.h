@@ -1,16 +1,13 @@
 #pragma once
 
 #include <cstdint>
+#include <memory>
 
 #include "constants.h"
 #include "stable_random.h"
+#include "Map.h"
 
 namespace Cinder {
-
-struct River {
-    TileBorder riverEntry;
-    TileBorder riverExit;
-};
 
 struct MapGenerator {
     uint64_t seed;
@@ -24,14 +21,13 @@ struct MapGenerator {
 
     MapTypes mapType = MapTypes::WORLD_MAP;
     BiomeCell *map;
-    BiomeCell& map_at(size_t x, size_t y);
     River *rivers;
     Random rand;
 
     float get_altitude(uint32_t x, uint32_t y);
     void generate_river_starting_from(uint32_t x, uint32_t y);
 
-    void generate_map();
+    std::shared_ptr<Map> generate_map();
     void save_to_file(const char *filename);
 };
 

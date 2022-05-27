@@ -15,9 +15,8 @@ int main() {
     mapgen.seed = rand() * 10000000;
     mapgen.width = 200;
     mapgen.height = 200;
-    mapgen.generate_map();
 
-    MapViewer view(mapgen);
+    MapViewer view(mapgen.generate_map());
     view.draw();
 
     int ch;
