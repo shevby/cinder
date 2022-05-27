@@ -3,9 +3,8 @@
 #include <cstdint>
 #include <memory>
 
-#include "constants.h"
 #include "stable_random.h"
-#include "Map.h"
+#include "Map/Map.h"
 
 namespace Cinder {
 

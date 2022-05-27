@@ -1,8 +1,9 @@
 #pragma once
 
 #include <cstdint>
+#include <cstddef>
 
-#include "constants.h"
+#include "Enums.h"
 
 namespace Cinder {
 
@@ -10,6 +11,15 @@ struct River {
     TileBorder riverEntry;
     TileBorder riverExit;
 };
+
+#pragma pack(push, 1)
+struct BiomeCell {
+    Biomes tile: 5;
+    RiverDirection river: 3;
+};
+#pragma pack(pop)
+
+static_assert(sizeof(BiomeCell) == sizeof(uint8_t), "BiomeCell and uint8_t sizes mismatch");
 
 class MapColumn {
 public:

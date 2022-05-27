@@ -1,6 +1,3 @@
-#include <cstdint>
-
-#include "constants.h"
 #include "Map.h"
 
 namespace Cinder {
