@@ -3,7 +3,6 @@
 
 #include <string>
 #include <functional>
-#include <iostream>
 #include <vector>
 
 
@@ -43,9 +42,5 @@ public:
         return true;
     }
 };
-
-
-
-
 
 #endif // SWITCH_H

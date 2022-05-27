@@ -1,7 +1,5 @@
 #include "Controls.h"
 
-#include <iostream>
-
 Controls::Controls(sf::Window &w) : window{w}
 {
 

@@ -1,7 +1,5 @@
 #include "ResourceManager.h"
 
-#include <iostream>
-
 std::shared_ptr<ResourceManager> ResourceManager::_self = nullptr;
 
 ResourceManager::ResourceManager()

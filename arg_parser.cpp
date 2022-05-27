@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "arg_parser.h"
 
 arg_parser::arg_parser(int argc, char **argv) {
