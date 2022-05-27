@@ -1,7 +1,7 @@
 #include <ncurses.h>
 #include <iostream>
 
-#include "../MapGenerator.h"
+#include "MapGenerator/MapGenerator.h"
 #include "MapViewer.h"
 
 using namespace Cinder;

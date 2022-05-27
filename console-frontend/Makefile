@@ -1,2 +1,8 @@
 all:
-	g++ *.cpp ../MapGenerator.cpp ../Map.cpp ../perlin_noise.cpp ../stable_random.cpp -lncurses
+	g++ -I.. \
+	*.cpp \
+	../MapGenerator/MapGenerator.cpp \
+	../MapGenerator/PerlinNoise.cpp \
+	../Map.cpp \
+	../stable_random.cpp \
+	-lncurses

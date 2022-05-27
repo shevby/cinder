@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include "arg_parser.h"
-#include "MapGenerator.h"
+#include "MapGenerator/MapGenerator.h"
 
 #define INT_PARAM(DEST, NAME) \
     if (args.params.find(NAME) != args.params.end()) { \

@@ -1,6 +1,6 @@
 #include <memory>
 
-#include "../MapGenerator.h"
+#include "Map.h"
 
 namespace Cinder {
 
