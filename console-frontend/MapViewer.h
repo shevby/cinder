@@ -5,8 +5,8 @@
 namespace Cinder {
 
 struct MapViewer {
-    // TODO: replace MapGenerator with an actual map when I gets its proper class
     MapViewer(std::shared_ptr<Map> _map);
+    static void initColors();
 
     int x; // top-left corner
     int y; // top-left corner

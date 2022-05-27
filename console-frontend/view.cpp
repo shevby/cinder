@@ -8,6 +8,7 @@ using namespace Cinder;
 
 int main() {
     initscr();
+    MapViewer::initColors();
 
     srand(time(NULL));
 
