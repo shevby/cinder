@@ -1,23 +1,33 @@
+#include <cstdlib>
 #include <ncurses.h>
-#include <iostream>
+#include <string>
 
 #include "MapGenerator/MapGenerator.h"
 #include "MapViewer.h"
 
 using namespace Cinder;
 
-int main() {
+int main(int argc, char **argv) {
     initscr();
     MapViewer::initColors();
 
     srand(time(NULL));
 
-    MapGenerator mapgen;
-    mapgen.seed = rand() * 10000000;
-    mapgen.width = 200;
-    mapgen.height = 200;
+    std::shared_ptr<Map> map = std::make_shared<Map>();
 
-    MapViewer view(mapgen.generate_map());
+    if (argc > 1) {
+        map->loadFromFile(argv[1]);
+    }
+    else {
+        MapGenerator mapgen;
+        mapgen.seed = rand() / 1000;
+        mapgen.width = 200;
+        mapgen.height = 200;
+
+        map = mapgen.generate_map();
+    }
+
+    MapViewer view(map);
     view.draw();
 
     int ch;

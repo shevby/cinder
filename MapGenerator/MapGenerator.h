@@ -27,7 +27,6 @@ struct MapGenerator {
     void generate_river_starting_from(uint32_t x, uint32_t y);
 
     std::shared_ptr<Map> generate_map();
-    void save_to_file(const char *filename);
 };
 
 }; // namespace Cinder

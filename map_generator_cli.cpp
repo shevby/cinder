@@ -67,6 +67,8 @@ int main(int argc, char **argv)
               << "sea level = " << mapgen.sea_level << "\n"
               << "output file = " << output_file << "\n";
 
-    mapgen.save_to_file(output_file.c_str());
+    auto map = mapgen.generate_map();
+    map->saveToFile(output_file);
+
     return 0;
 }

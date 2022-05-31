@@ -185,28 +185,12 @@ std::shared_ptr<Map> MapGenerator::generate_map() {
     delete[] rivers;
 
     auto result = std::make_shared<Map>();
+    result->mapType= mapType;
     result->height = height;
     result->width  = width;
     result->map    = map;
 
     return result;
-}
-
-void MapGenerator::save_to_file(const char *filename) {
-    FILE *f;
-
-    f = fopen(filename, "wb");
-    if (!f) {
-        return;
-    }
-
-    uint32_t _mapType = (uint32_t)mapType;
-    fwrite(&_mapType, sizeof(uint32_t), 1, f);
-    fwrite(&height, sizeof(uint32_t), 1, f);
-    fwrite(&width, sizeof(uint32_t), 1, f);
-    fwrite(map, sizeof(uint8_t), width * height, f);
-
-    fclose(f);
 }
 
 }; // namespace Cinder

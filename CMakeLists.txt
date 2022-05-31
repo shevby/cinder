@@ -10,6 +10,7 @@ find_package(OpenMP REQUIRED)
 set(SOURCES
     map_generator_cli.cpp
     stable_random.cpp
+    Map/Map.cpp
     MapGenerator/MapGenerator.cpp
     MapGenerator/PerlinNoise.cpp
     arg_parser.cpp

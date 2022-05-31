@@ -30,13 +30,18 @@ private:
 };
 
 struct Map {
-    uint32_t width;
-    uint32_t height;
     MapTypes mapType = MapTypes::WORLD_MAP;
-    BiomeCell *map;
+    uint32_t width = 0;
+    uint32_t height = 0;
+
     MapColumn operator[](const size_t column);
-    River *rivers;
-    void save_to_file(const char *filename);
+
+    bool loadFromFile(const std::string &filename);
+    void saveToFile(const std::string &filename);
+
+private:
+    friend class MapGenerator;
+    BiomeCell *map = nullptr;
 };
 
 }; // namespace Cinder
