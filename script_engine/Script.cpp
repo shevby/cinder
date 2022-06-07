@@ -7,7 +7,7 @@
 
 namespace cinder {
 
-extern std::unordered_map<std::string, void*> variables;
+VariableStorage vars;
 
 SingleScriptLine::SingleScriptLine(const std::vector<std::string> &words) {
     if (words.size() == 0) {
@@ -24,21 +24,9 @@ SingleScriptLine::SingleScriptLine(const std::vector<std::string> &words) {
     args = _args;
 }
 
-static GenericVariable *get_var(const std::string &name) {
-    auto it = variables.find(name);
-    if (it == variables.end()) {
-        auto var = new Variable();
-        variables.insert({name, var});
-        return var;
-    }
-    else {
-        return (GenericVariable *)it->second;
-    }
-}
-
 static int get_int(const std::string &name) {
     try {
-        auto var = get_var(name);
+        auto var = vars[name];
         return std::stoi(var->read());
     }
     catch (const std::exception& ex) {
@@ -53,10 +41,10 @@ void SingleScript::execute() {
         auto cmd = line.cmd;
         auto args = line.args;
         if (cmd == "ASSIGN_VALUE") {
-        	get_var(args[0])->write(args[1]);
+       	    vars[args[0]]->write(args[1]);
         }
         else if (cmd == "ASSIGN_VARIABLE") {
-            get_var(args[0])->write(get_var(args[1])->read());
+            vars[args[0]]->write(vars[args[1]]->read());
         }
         else if (cmd == "RETURN_IF") {
             std::string op = args[0];
@@ -70,10 +58,10 @@ void SingleScript::execute() {
         }
         else if (cmd == "ADD") {
             int new_value = get_int(args[0]) + get_int(args[1]);
-            get_var(args[0])->write(std::to_string(new_value));
+            vars[args[0]]->write(std::to_string(new_value));
         }
         else if (cmd == "PRINT") {
-            std::cout << get_var(args[0])->read() << "\n";
+            std::cout << vars[args[0]]->read() << "\n";
         }
         else if (cmd == "REPEAT") {
             running = true;

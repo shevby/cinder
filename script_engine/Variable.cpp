@@ -1,6 +1,5 @@
 #include <string>
 #include <vector>
-#include <unordered_map>
 
 #include "Variable.h"
 
@@ -14,6 +13,16 @@ std::string Variable::read() {
     return value;
 }
 
-std::unordered_map<std::string, void*> variables;
+GenericVariable* VariableStorage::operator[](const std::string &name) {
+    auto it = vars->find(name);
+    if (it == vars->end()) {
+        auto var = new Variable();
+        vars->insert({name, var});
+        return var;
+    }
+    else {
+        return (GenericVariable *)it->second;
+    }
+}
 
 } // namespace cinder

@@ -1,4 +1,6 @@
+#include <memory>
 #include <string>
+#include <unordered_map>
 
 namespace cinder {
 
@@ -17,6 +19,14 @@ public:
     std::string read() override;
 private:
     std::string value;
+};
+
+class VariableStorage {
+public:
+    GenericVariable* operator[](const std::string &name);
+private:
+    using _map = std::unordered_map<std::string, void*>;
+    std::shared_ptr<_map> vars = std::make_shared<_map>();
 };
 
 } // namespace cinder
