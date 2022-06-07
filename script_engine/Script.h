@@ -1,13 +1,14 @@
-#include <sstream>
 #include <string>
 #include <vector>
+
+#include "ArgList.h"
 
 namespace cinder {
 
 struct SingleScriptLine {
     SingleScriptLine(const std::vector<std::string> &words);
     std::string cmd;
-    std::vector<std::string> args;
+    ArgList args;
 };
 
 struct SingleScript {

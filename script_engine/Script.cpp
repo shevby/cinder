@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include <unordered_map>
 
 #include "Script.h"
@@ -14,9 +15,13 @@ SingleScriptLine::SingleScriptLine(const std::vector<std::string> &words) {
     }
 
     cmd = words[0];
+
+    std::vector<std::string> _args;
     for (size_t i = 1; i<words.size(); ++i) {
-        args.push_back(words[i]);
+        _args.push_back(words[i]);
     }
+
+    args = _args;
 }
 
 static GenericVariable *get_var(const std::string &name) {
