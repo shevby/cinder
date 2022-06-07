@@ -24,13 +24,18 @@ SingleScriptLine::SingleScriptLine(const std::vector<std::string> &words) {
     args = _args;
 }
 
-static int get_int(const std::string &name) {
+static std::string deref_value(const std::string &name) {
+    return (name.size() > 0) && (name[0] == '$')
+         ? vars[name]->read()
+         : name;
+}
+
+static int get_int(const std::string &value) {
     try {
-        auto var = vars[name];
-        return std::stoi(var->read());
+        return std::stoi(deref_value(value));
     }
     catch (const std::exception& ex) {
-        std::cerr << "Can't read int of " << name << " " << ex.what() << "\n";
+        std::cerr << "Can't convert '" << value << "' to integer: " << ex.what() << "\n";
         return 0;
     }
 }
@@ -40,11 +45,8 @@ void SingleScript::execute() {
     for (const auto line : lines) {
         auto cmd = line.cmd;
         auto args = line.args;
-        if (cmd == "ASSIGN_VALUE") {
-       	    vars[args[0]]->write(args[1]);
-        }
-        else if (cmd == "ASSIGN_VARIABLE") {
-            vars[args[0]]->write(vars[args[1]]->read());
+        if (cmd == "SET") {
+            vars[args[0]]->write(deref_value(args[1]));
         }
         else if (cmd == "RETURN_IF") {
             std::string op = args[0];
@@ -57,11 +59,11 @@ void SingleScript::execute() {
             }
         }
         else if (cmd == "ADD") {
-            int new_value = get_int(args[0]) + get_int(args[1]);
+            int new_value = get_int("$" + args[0]) + get_int(args[1]);
             vars[args[0]]->write(std::to_string(new_value));
         }
         else if (cmd == "PRINT") {
-            std::cout << vars[args[0]]->read() << "\n";
+            std::cout << deref_value(args[0]) << "\n";
         }
         else if (cmd == "REPEAT") {
             running = true;

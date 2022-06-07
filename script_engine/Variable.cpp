@@ -14,6 +14,12 @@ std::string Variable::read() {
 }
 
 GenericVariable* VariableStorage::operator[](const std::string &name) {
+    // Indirection
+    if ((name.size() > 0) && (name[0] == '$')) {
+        auto target_var = name.substr(1);
+        return (*this)[target_var];
+    }
+
     auto it = vars->find(name);
     if (it == vars->end()) {
         auto var = new Variable();
