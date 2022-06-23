@@ -7,6 +7,7 @@
 
 #define voidCallback [&]()->void
 
+#define VERSION "1.0.0"
 
 void printHelp() {
     using namespace std;
