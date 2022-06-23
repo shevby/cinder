@@ -1,35 +1,16 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.23)
+project(Cinder VERSION 0.0.1 LANGUAGES CXX)
 
-project(generate-map LANGUAGES CXX)
-
-set(CMAKE_CXX_STANDARD 20)
+#Language config
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-find_package(OpenMP REQUIRED)
+#Outputs config
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
-set(SOURCES
-    map_generator_cli.cpp
-    stable_random.cpp
-    Map/Map.cpp
-    MapGenerator/MapGenerator.cpp
-    MapGenerator/PerlinNoise.cpp
-    arg_parser.cpp
-    )
+set(NAME_EXE_MAP_GENERATOR "mapgen")
+set(NAME_LIB_MAP_GENERATOR "mapgenlib")
 
-set(HEADERS
-    stable_random.h
-    MapGenerator/MapGenerator.h
-    MapGenerator/PerlinNoise.h
-    arg_parser.h
-    constants.h
-    )
-
-include_directories(.)
-
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-
-add_executable(generate-map ${SOURCES} ${HEADERS})
-
-if(OpenMP_CXX_FOUND)
-    target_link_libraries(generate-map PUBLIC OpenMP::OpenMP_CXX)
-endif()
+add_subdirectory("./MapGenerator")
