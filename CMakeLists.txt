@@ -13,4 +13,4 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(NAME_EXE_MAP_GENERATOR "mapgen")
 set(NAME_LIB_MAP_GENERATOR "mapgenlib")
 
-add_subdirectory("./MapGenerator")
+add_subdirectory("./src/MapGenerator")
