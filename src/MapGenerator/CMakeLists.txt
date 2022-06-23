@@ -16,13 +16,18 @@ set(
 
 include_directories(
   "./"
-  "../"
 )
 
 add_library(
   ${NAME_LIB_MAP_GENERATOR}
   SHARED
   ${LIB_SOURCES}
+)
+
+target_link_libraries(
+  ${NAME_LIB_MAP_GENERATOR}
+  PUBLIC
+  ${NAME_LIB_MAP}
 )
 
 add_executable(

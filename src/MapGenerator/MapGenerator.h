@@ -4,7 +4,7 @@
 #include <memory>
 
 #include "stable_random.h"
-#include "Map/Map.h"
+#include "Map.h"
 
 namespace Cinder {
 
