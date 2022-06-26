@@ -1,4 +1,5 @@
 set(SFML_VERSION "2.6.x")
+set(SIN_VERSION "1.0.0")
 
 function(addExternal)
   include(FetchContent)
@@ -15,6 +16,13 @@ function(addExternal)
     GIT_TAG v1.88
   )
   FetchContent_MakeAvailable(imgui)
+
+  FetchContent_Declare(
+    sin
+    GIT_REPOSITORY https://github.com/shevby/sin
+    GIT_TAG ${SIN_VERSION}
+  )
+  FetchContent_MakeAvailable(sin)
 
   FetchContent_Declare(
     imgui-sfml
@@ -64,7 +72,9 @@ function(addExternal)
   )
 
   include_directories(
+    "${sfml_SOURCE_DIR}/include"
     ${imgui_SOURCE_DIR}
     ${imgui-sfml_SOURCE_DIR}
+    ${sin_SOURCE_DIR}
   )
 endfunction(addExternal)

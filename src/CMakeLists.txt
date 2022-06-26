@@ -20,6 +20,6 @@ include_directories(
 # Build targets
 add_subdirectory("Map")
 add_subdirectory("MapGenerator")
-add_subdirectory("CinderCellEditor")
+# add_subdirectory("CinderCellEditor")
 add_subdirectory("Engine")
 add_subdirectory("Cinder")
