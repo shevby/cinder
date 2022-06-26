@@ -16,5 +16,7 @@ set(NAME_EXE_MAP_GENERATOR "mapgen")
 set(NAME_LIB_MAP_GENERATOR "lmapgen")
 set(NAME_LIB_MAP "lmap")
 set(NAME_EXE_CCE "cce")
+set(NAME_LIB_CINDER_ENGINE "cinderengine")
+set(NAME_EXE_CINDER_MAIN "cinder")
 
 add_subdirectory("./src")
