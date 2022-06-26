@@ -1,6 +1,7 @@
 set(
   SORUCES
   "./main.cpp"
+  "./CinderGame.cpp"
 )
 
 add_executable(${NAME_EXE_CINDER_MAIN} ${SORUCES})

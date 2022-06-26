@@ -1,5 +1,5 @@
 set(SFML_VERSION "2.6.x")
-set(SIN_VERSION "1.0.0")
+set(SIN_VERSION "1.0.1")
 
 function(addExternal)
   include(FetchContent)
