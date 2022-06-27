@@ -68,3 +68,7 @@ void fs::File::close()
   file.flush();
   file.close();
 }
+
+bool fs::File::eof() {
+  return file.eof();    
+}

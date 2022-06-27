@@ -123,3 +123,6 @@ std::vector<fs::path> fs::lsr(path dirPath) {
 std::vector<fs::path> fs::dirr(path dirPath) {
   return fs::readDirRecursive(dirPath);    
 }
+fs::File fs::open(path filePath, fs::openmode mode) {
+  return fs::File(filePath, mode);
+}
