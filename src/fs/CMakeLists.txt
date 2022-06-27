@@ -1,6 +1,7 @@
 set(
   SOURCES
   "./fs.cpp"
+  "./File.cpp"
 )
 
 option(TEST_FS "Build catch2 tests" ON)
@@ -16,3 +17,4 @@ endif()
 
 
 add_library(${NAME_LIB_FS} SHARED ${SOURCES})
+# add_executable("fsexe" ${SOURCES} "./main.cpp")
