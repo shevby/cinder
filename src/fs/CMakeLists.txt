@@ -17,4 +17,3 @@ endif()
 
 
 add_library(${NAME_LIB_FS} SHARED ${SOURCES})
-# add_executable("fsexe" ${SOURCES} "./main.cpp")

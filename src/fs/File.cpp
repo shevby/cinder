@@ -27,20 +27,6 @@ void fs::File::write(const std::vector<char> buffer)
   file.write(&buffer[0], buffer.size());
 }
 
-void fs::File::write(const char *cstr)
-{
-  char *p = const_cast<char *>(cstr);
-
-  while (*p != '\0')
-  {
-    p++;
-  }
-
-  size_t size = p - cstr;
-
-  file.write(cstr, size);
-}
-
 void fs::File::write(const size_t size, const char *cbuffer)
 {
   file.write(cbuffer, size);
@@ -71,4 +57,8 @@ void fs::File::close()
 
 bool fs::File::eof() {
   return file.eof();    
+}
+
+std::fstream & fs::File::fstream() {
+  return this->file;    
 }

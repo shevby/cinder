@@ -1,5 +1,7 @@
 set(TEST_MAIN "test_fs")
 
+set(CMAKE_BUILD_TYPE Debug)
+
 set(
   TEST_SOURCES
   "${CMAKE_BINARY_DIR}/configured_files/test_fs.cpp"

@@ -43,21 +43,25 @@ std::vector<char> fs::readAllBytes(const std::filesystem::path filePath)
   return result;
 }
 
-uintmax_t fs::size(const path filePath) {
-  return std::filesystem::file_size(filePath);    
+uintmax_t fs::size(const path filePath)
+{
+  return std::filesystem::file_size(filePath);
 }
 
-
-bool fs::walk(path dirPath, std::function<bool(const std::filesystem::directory_entry&)> callback) {
-  if(!fs::exists(dirPath)) {
+bool fs::walk(path dirPath, std::function<bool(const std::filesystem::directory_entry &)> callback)
+{
+  if (!fs::exists(dirPath))
+  {
     std::cerr << "Directory '" << dirPath << "' doesn't exist!\n";
     exit(0);
   }
 
-  for(auto& entry : std::filesystem::directory_iterator{dirPath}) {
+  for (auto &entry : std::filesystem::directory_iterator{dirPath})
+  {
     auto interupt = callback(entry);
 
-    if(interupt) {
+    if (interupt)
+    {
       return true;
     }
   }
@@ -65,16 +69,20 @@ bool fs::walk(path dirPath, std::function<bool(const std::filesystem::directory_
   return false;
 }
 
-bool fs::walkRecursive(path dirPath, std::function<bool(const std::filesystem::directory_entry&)> callback) {
-  if(!fs::exists(dirPath)) {
+bool fs::walkRecursive(path dirPath, std::function<bool(const std::filesystem::directory_entry &)> callback)
+{
+  if (!fs::exists(dirPath))
+  {
     std::cerr << "Directory '" << dirPath << "' doesn't exist!\n";
     exit(0);
   }
 
-  for(auto& entry : std::filesystem::recursive_directory_iterator{dirPath}) {
+  for (auto &entry : std::filesystem::recursive_directory_iterator{dirPath})
+  {
     auto interupt = callback(entry);
 
-    if(interupt) {
+    if (interupt)
+    {
       return true;
     }
   }
@@ -82,47 +90,110 @@ bool fs::walkRecursive(path dirPath, std::function<bool(const std::filesystem::d
   return false;
 }
 
-
-bool fs::walkr(path dirPath, std::function<bool(const std::filesystem::directory_entry&)> callback) {
+bool fs::walkr(path dirPath, std::function<bool(const std::filesystem::directory_entry &)> callback)
+{
   return fs::walkRecursive(dirPath, callback);
 }
 
-
-std::vector<fs::path> fs::readDir(fs::path dirPath) {
+std::vector<fs::path> fs::readDir(fs::path dirPath)
+{
   std::vector<fs::path> paths;
 
-  fs::walk(dirPath, [&](auto entry)->bool{
-    paths.push_back(entry);
-  });
+  fs::walk(dirPath, [&](auto entry) -> bool
+           { paths.push_back(entry); });
 
   return paths;
 }
 
-std::vector<fs::path> fs::ls(path dirPath) {
-  return fs::readDir(dirPath);    
+std::vector<fs::path> fs::ls(path dirPath)
+{
+  return fs::readDir(dirPath);
 }
 
-std::vector<fs::path> fs::dir(path dirPath) {
-  return fs::readDir(dirPath);    
+std::vector<fs::path> fs::dir(path dirPath)
+{
+  return fs::readDir(dirPath);
 }
 
-std::vector<fs::path> fs::readDirRecursive(fs::path dirPath) {
+std::vector<fs::path> fs::readDirRecursive(fs::path dirPath)
+{
   std::vector<fs::path> paths;
 
-  fs::walkRecursive(dirPath, [&](auto entry)->bool{
-    paths.push_back(entry);
-  });
+  fs::walkRecursive(dirPath, [&](auto entry) -> bool
+                    { paths.push_back(entry); });
 
   return paths;
 }
 
-std::vector<fs::path> fs::lsr(path dirPath) {
-  return fs::readDirRecursive(dirPath);    
+std::vector<fs::path> fs::lsr(path dirPath)
+{
+  return fs::readDirRecursive(dirPath);
 }
 
-std::vector<fs::path> fs::dirr(path dirPath) {
-  return fs::readDirRecursive(dirPath);    
+std::vector<fs::path> fs::dirr(path dirPath)
+{
+  return fs::readDirRecursive(dirPath);
 }
-fs::File fs::open(path filePath, fs::openmode mode) {
+fs::File fs::open(path filePath, fs::openmode mode)
+{
   return fs::File(filePath, mode);
+}
+
+bool fs::createDirectory(path dirPath)
+{
+  return std::filesystem::create_directories(dirPath);
+}
+
+bool fs::mkdir(path dirPath)
+{
+  return fs::createDirectory(dirPath);
+}
+
+bool fs::isDirectory(path filePath)
+{
+  return std::filesystem::is_directory(filePath);
+}
+
+bool fs::isEmpty(path filePath)
+{
+  return std::filesystem::is_empty(filePath);
+}
+
+bool fs::remove(path filePath)
+{
+  return std::filesystem::remove(filePath);
+}
+
+bool fs::rm(path filePath)
+{
+  return fs::remove(filePath);
+}
+
+bool fs::removeAll(path filePath)
+{
+  return std::filesystem::remove_all(filePath);
+}
+
+bool fs::rmrf(path filePath)
+{
+  return fs::removeAll(filePath);
+}
+void fs::move(path from, path to)
+{
+  std::filesystem::rename(from, to);
+}
+
+void fs::mv(path from, path to)
+{
+  fs::move(from, to);
+}
+
+void fs::copy(path from, path to)
+{
+  std::filesystem::copy(from, to, std::filesystem::copy_options::recursive);
+}
+
+void fs::cp(path from, path to)
+{
+  fs::copy(from, to);
 }

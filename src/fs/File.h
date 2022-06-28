@@ -31,8 +31,16 @@ namespace fs
   std::fstream file;
 
   public:
-    File(std::filesystem::path path, const openmode mode = w | r);
+    File(std::filesystem::path path, const openmode mode = w);
     virtual ~File();
+
+    /**
+     * @brief Returns standard fstream of file
+     * 
+     * @return std::fstream& 
+     */
+    std::fstream & fstream();
+
     /**
      * @brief Writes string to file
      * 
@@ -46,13 +54,6 @@ namespace fs
      * @param buffer 
      */
     void write(const std::vector<char> buffer);
-
-    /**
-     * @brief Writes C string to file (must to end with '\0')
-     * 
-     * @param cstr 
-     */
-    void write(const char *cstr);
 
     /**
      * @brief Writes C buffer to file
