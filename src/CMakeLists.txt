@@ -6,6 +6,7 @@ set(
   "CinderCellEditor"
   "Engine"
   "Cinder"
+  "ResourceManager"
 )
 
 #Add external dependencies
@@ -24,3 +25,4 @@ add_subdirectory("MapGenerator")
 add_subdirectory("Engine")
 add_subdirectory("CinderGame")
 add_subdirectory("fs")
+add_subdirectory("ResourceManager")
