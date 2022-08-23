@@ -7,6 +7,7 @@ set(
   "Engine"
   "Cinder"
   "ResourceManager"
+  "fs"
 )
 
 #Add external dependencies

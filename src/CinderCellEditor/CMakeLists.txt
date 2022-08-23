@@ -22,5 +22,3 @@ target_link_libraries(
     sfml-audio
     ImGui-SFML::ImGui-SFML
 )
-
-file(COPY resources DESTINATION ${CMAKE_BINARY_DIR})

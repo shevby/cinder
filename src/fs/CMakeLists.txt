@@ -4,7 +4,7 @@ set(
   "./File.cpp"
 )
 
-option(TEST_FS "Build catch2 tests" ON)
+option(TEST_FS "Build catch2 tests" OFF)
 
 # Language config
 set(CMAKE_CXX_STANDARD 23)

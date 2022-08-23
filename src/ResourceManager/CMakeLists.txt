@@ -6,11 +6,23 @@ find_package(Qt6 6.3 REQUIRED COMPONENTS Quick Gui)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-qt_add_executable(
-  ${NAME_EXE_RESOURCE_MANAGER}
+set(
+  SOURCES
   main.cpp
+  Resman.cpp
 )
 
+qt_add_executable(
+  ${NAME_EXE_RESOURCE_MANAGER}
+  ${SOURCES}
+)
+
+target_link_libraries(
+  ${NAME_EXE_RESOURCE_MANAGER}
+  PRIVATE
+  sin
+  ${NAME_LIB_FS}
+)
 
 set(
   QMLS

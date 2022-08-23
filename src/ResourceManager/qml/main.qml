@@ -9,7 +9,6 @@ ApplicationWindow {
     width: 1280
     height: 720
 
-
     Rectangle {
         anchors.fill: parent
 

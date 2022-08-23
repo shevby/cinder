@@ -3,7 +3,7 @@ project(Cinder VERSION 0.0.1 LANGUAGES CXX)
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/")
 
-#Set Qt path
+# Set Qt path
 set(CMAKE_PREFIX_PATH "~/Qt/6.3.1/macos")
 
 # Language config
@@ -28,3 +28,5 @@ set(NAME_EXE_RESOURCE_MANAGER "resman")
 set(NAME_LIB_RESOURCE_MANAGER "lresman")
 
 add_subdirectory("./src")
+
+file(COPY "res" DESTINATION ${CMAKE_BINARY_DIR})
