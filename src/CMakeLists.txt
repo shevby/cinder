@@ -3,10 +3,10 @@ set(
   TARGET_DIRS
   "Map"
   "MapGenerator"
-  "CinderCellEditor"
   "Engine"
   "Cinder"
   "ResourceManager"
+  "ResourceManager/lib"
   "fs"
 )
 

@@ -9,6 +9,8 @@ Rectangle {
     height: 50
     color: "#e2e2e2"
 
+    property var resourcesPath: resourcesPath
+
     Row {
         anchors.left: parent.left
         anchors.right: parent.right
@@ -25,11 +27,9 @@ Rectangle {
 
         TextField {
             id: resourcesPath
+            objectName: "resourcesPath"
             width: parent.width * 0.8
             enabled: false
-            onTextChanged: {
-                resman.open(text);
-            }
         }
     }
 
@@ -37,7 +37,7 @@ Rectangle {
         id: fileDialog
         options: FileDialog.ReadOnly
         onAccepted: {
-            resourcesPath.text = currentFolder.toString().slice(7);
+            resman.open(currentFolder.toString().slice(7));
         }
     }
 }

@@ -23,7 +23,9 @@ ApplicationWindow {
             orientation: Qt.Horizontal
             Item {
                 SplitView.fillWidth: true
-                ResourceTree {}
+                ResourceTree {
+                    resourcesPath: controlPanel.resourcesPath
+                }
             }
 
             Item {
