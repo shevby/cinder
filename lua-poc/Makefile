@@ -1,4 +1,11 @@
-all: download_lua
+hello-world: build-lua
+	g++ hello.cpp \
+		-I build/lua-`cat lua_version`/src/ \
+		build/lua-`cat lua_version`/src/liblua.a \
+		-ldl \
+		-o build/hello
+
+build-lua: download_lua
 	make -C build/lua-`cat lua_version`
 
 download_lua:
