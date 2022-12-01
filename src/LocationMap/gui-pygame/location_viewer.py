@@ -45,11 +45,12 @@ while(True):
 
     for i in range(len(location['tiles'])):
         for j in range(len(location['tiles'][i])):
+            base_x = i * (TILE_SIZE[0] + INTERVAL_BETWEEN_TILES)
+            base_y = j * (TILE_SIZE[1] + INTERVAL_BETWEEN_TILES)
+            pygame.draw.rect(display, (77, 3, 204), ((base_x, base_y), (2*PORTRAIT_SIZE[0], 2*PORTRAIT_SIZE[1])))
+
             creatures = location['tiles'][i][j][0]['creatures']
             for k, creature in enumerate(creatures):
-                base_x = i * (TILE_SIZE[0] + INTERVAL_BETWEEN_TILES)
-                base_y = j * (TILE_SIZE[1] + INTERVAL_BETWEEN_TILES)
-                pygame.draw.rect(display, (77, 3, 204), ((base_x, base_y), (2*PORTRAIT_SIZE[0], 2*PORTRAIT_SIZE[1])))
                 if k == 0:
                     display.blit(get_image(creature['type'] + '.png'), (base_x, base_y))
                 elif k == 1:
