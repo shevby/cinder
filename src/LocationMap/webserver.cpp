@@ -4,7 +4,9 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-int main() {
+#include "WebServer.h"
+
+void server_thread(std::function<std::string()> get_content) {
     struct sockaddr_in socket_address;
     memset(&socket_address, 0, sizeof(socket_address));
     socket_address.sin_family = AF_INET;
@@ -42,9 +44,7 @@ int main() {
             std::cerr << "Failed to read\n";
         }
 
-        std::string reply = "HTTP/1.0 200 OK\n"
-                            "\n"
-                            "It works!\n";
+        std::string reply = "HTTP/1.0 200 OK\n\n" + get_content();
 
         n = write(new_fd, reply.c_str(), reply.size());
         if (n < 0) {

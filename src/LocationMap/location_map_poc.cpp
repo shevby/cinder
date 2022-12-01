@@ -1,7 +1,9 @@
 #include <iostream>
+#include <thread>
 #include <unistd.h>
 
 #include "LocationMap.h"
+#include "WebServer.h"
 
 const std::string TAB = "    "; // 4 spaces
 
@@ -260,8 +262,13 @@ std::ostream& operator<< (std::ostream& stream, const Map& map) {
     return stream;
 }
 
+Map map;
+
+std::string get_map_content() {
+    return map.to_json();
+}
+
 int main() {
-    Map map;
     for (size_t i=0; i<HEIGHT; ++i) {
         for (size_t j=0; j<WIDTH; ++j) {
             int creature_number = rand() % 5;
@@ -270,6 +277,8 @@ int main() {
             }
         }
     }
+
+    std::thread web_thread(server_thread, get_map_content);
 
     while(true) {
         std::cout << "-------------------------------------------------------------------\n\n";

@@ -2,7 +2,7 @@ run: all
 	./a.out
 
 all:
-	g++ *.cpp
+	g++ *.cpp -pthread
 
 clean:
 	rm a.out
