@@ -4,6 +4,8 @@
 #include <unistd.h>
 #include <vector>
 
+const std::string TAB = "    "; // 4 spaces
+
 enum class CreatureType {
     Tree,
     Berry,
@@ -11,6 +13,17 @@ enum class CreatureType {
     Wolf,
     Human,
 };
+
+std::string creatureTypeToString(CreatureType type) {
+    switch (type) {
+    case CreatureType::Tree:   return "Tree";
+    case CreatureType::Berry:  return "Berry";
+    case CreatureType::Rabbit: return "Rabbit";
+    case CreatureType::Wolf:   return "Wolf";
+    case CreatureType::Human:  return "Human";
+    }
+    return "???";
+}
 
 CreatureType random_creature() {
     switch (rand() % 5) {
@@ -20,6 +33,7 @@ CreatureType random_creature() {
     case 3: return CreatureType::Wolf;
     case 4: return CreatureType::Human;
     }
+    return CreatureType::Tree;
 }
 
 size_t creature_id() {
@@ -60,6 +74,30 @@ struct Creature {
     bool is_dead() {
         return hp < 0;
     }
+
+    std::vector<std::string> to_json_lines() {
+#define CREATURE_JSON_ADD_INT(PARAM) \
+    res.push_back(TAB + "\"" #PARAM "\": " + std::to_string(PARAM) + ",");
+        std::vector<std::string> res;
+        res.push_back("{");
+        CREATURE_JSON_ADD_INT(id)
+        CREATURE_JSON_ADD_INT(hp)
+        CREATURE_JSON_ADD_INT(max_hp)
+        CREATURE_JSON_ADD_INT(age)
+        CREATURE_JSON_ADD_INT(max_age)
+        CREATURE_JSON_ADD_INT(is_grass)
+        CREATURE_JSON_ADD_INT(is_meat)
+        CREATURE_JSON_ADD_INT(can_eat_grass)
+        CREATURE_JSON_ADD_INT(can_eat_meat)
+        CREATURE_JSON_ADD_INT(hunger)
+        CREATURE_JSON_ADD_INT(max_hunger)
+        CREATURE_JSON_ADD_INT(hunger_rate)
+        CREATURE_JSON_ADD_INT(nutrition_value)
+        CREATURE_JSON_ADD_INT(attack)
+        res.push_back(TAB + "\"type\": \"" + creatureTypeToString(type) + "\"");
+        res.push_back("}");
+        return res;
+    }
 };
 
 struct Tile {
@@ -98,6 +136,23 @@ struct Tile {
         bite_each_other();
         remove_dead();
     }
+
+    std::vector<std::string> to_json_lines() {
+        std::vector<std::string> res;
+        res.push_back("{");
+        res.push_back(TAB + "\"creatures\": [");
+        for (size_t i=0; i<creatures.size(); ++i) {
+            for (auto line: creatures[i]->to_json_lines()) {
+                res.push_back(TAB + TAB + line + "");
+            }
+            if (i != creatures.size() - 1) {
+                res[res.size()-1] += ",";
+            }
+        }
+        res.push_back(TAB + "]");
+        res.push_back("}");
+        return res;
+    }
 };
 
 constexpr size_t WIDTH = 30;
@@ -116,6 +171,34 @@ struct Map {
                 tiles[i][j].tick();
             }
         }
+    }
+
+    std::vector<std::string> to_json_lines() {
+        std::vector<std::string> res;
+        res.push_back("{");
+        res.push_back(TAB + "\"tiles\": [");
+        for (size_t i=0; i<HEIGHT; ++i) {
+            res.push_back(TAB + TAB + "[");
+            for (size_t j=0; j<WIDTH; ++j) {
+                res.push_back(TAB + TAB + TAB + "[");
+                for (auto line: tiles[i][j].to_json_lines()) {
+                    res.push_back(TAB + TAB + TAB + TAB + line);
+                }
+                res.push_back(TAB + TAB + TAB + ((j == WIDTH - 1) ? "]" : "],"));
+            }
+            res.push_back(TAB + TAB + ((i == HEIGHT - 1) ? "]" : "],"));
+        }
+        res.push_back(TAB + "]");
+        res.push_back("}");
+        return res;
+    }
+
+    std::string to_json() {
+        std::string res;
+        for (auto line: to_json_lines()) {
+            res += line + "\n";
+        }
+        return res;
     }
 };
 
@@ -208,6 +291,7 @@ std::ostream& operator<< (std::ostream& stream, const Map& map) {
         }
         std::cout << "\n";
     }
+    return stream;
 }
 
 int main() {
