@@ -1,18 +1,9 @@
 #include <iostream>
-#include <memory>
-#include <string>
 #include <unistd.h>
-#include <vector>
+
+#include "LocationMap.h"
 
 const std::string TAB = "    "; // 4 spaces
-
-enum class CreatureType {
-    Tree,
-    Berry,
-    Rabbit,
-    Wolf,
-    Human,
-};
 
 std::string creatureTypeToString(CreatureType type) {
     switch (type) {
@@ -41,166 +32,141 @@ size_t creature_id() {
     return ++id;
 }
 
-struct Creature {
-    CreatureType type;
-    std::string symbol;
-    size_t id;
-    int hp;
-    int max_hp;
-    int age;
-    int max_age;
-    bool is_grass;
-    bool is_meat;
-    bool can_eat_grass;
-    bool can_eat_meat;
-    int hunger;
-    int max_hunger;
-    int hunger_rate;
-    int nutrition_value;
-    int attack;
-
-    void tick() {
-        ++age;
-        if (age > max_age) {
-            hp -= (age - max_age);
-        }
-
-        hunger += hunger_rate;
-        if (hunger > max_hunger) {
-            hp -= (hunger - max_hunger);
-        }
+void Creature::tick() {
+    ++age;
+    if (age > max_age) {
+        hp -= (age - max_age);
     }
 
-    bool is_dead() {
-        return hp < 0;
+    hunger += hunger_rate;
+    if (hunger > max_hunger) {
+        hp -= (hunger - max_hunger);
     }
+}
 
-    std::vector<std::string> to_json_lines() {
+bool Creature::is_dead() const {
+    return hp < 0;
+}
+
+std::vector<std::string> Creature::to_json_lines() const {
 #define CREATURE_JSON_ADD_INT(PARAM) \
     res.push_back(TAB + "\"" #PARAM "\": " + std::to_string(PARAM) + ",");
-        std::vector<std::string> res;
-        res.push_back("{");
-        CREATURE_JSON_ADD_INT(id)
-        CREATURE_JSON_ADD_INT(hp)
-        CREATURE_JSON_ADD_INT(max_hp)
-        CREATURE_JSON_ADD_INT(age)
-        CREATURE_JSON_ADD_INT(max_age)
-        CREATURE_JSON_ADD_INT(is_grass)
-        CREATURE_JSON_ADD_INT(is_meat)
-        CREATURE_JSON_ADD_INT(can_eat_grass)
-        CREATURE_JSON_ADD_INT(can_eat_meat)
-        CREATURE_JSON_ADD_INT(hunger)
-        CREATURE_JSON_ADD_INT(max_hunger)
-        CREATURE_JSON_ADD_INT(hunger_rate)
-        CREATURE_JSON_ADD_INT(nutrition_value)
-        CREATURE_JSON_ADD_INT(attack)
-        res.push_back(TAB + "\"type\": \"" + creatureTypeToString(type) + "\"");
-        res.push_back("}");
-        return res;
-    }
-};
+    std::vector<std::string> res;
+    res.push_back("{");
+    CREATURE_JSON_ADD_INT(id)
+    CREATURE_JSON_ADD_INT(hp)
+    CREATURE_JSON_ADD_INT(max_hp)
+    CREATURE_JSON_ADD_INT(age)
+    CREATURE_JSON_ADD_INT(max_age)
+    CREATURE_JSON_ADD_INT(is_grass)
+    CREATURE_JSON_ADD_INT(is_meat)
+    CREATURE_JSON_ADD_INT(can_eat_grass)
+    CREATURE_JSON_ADD_INT(can_eat_meat)
+    CREATURE_JSON_ADD_INT(hunger)
+    CREATURE_JSON_ADD_INT(max_hunger)
+    CREATURE_JSON_ADD_INT(hunger_rate)
+    CREATURE_JSON_ADD_INT(nutrition_value)
+    CREATURE_JSON_ADD_INT(attack)
+    res.push_back(TAB + "\"type\": \"" + creatureTypeToString(type) + "\"");
+    res.push_back("}");
+    return res;
+}
 
-struct Tile {
-    std::vector<std::shared_ptr<Creature>> creatures;
-
-    void remove_dead() {
-        std::vector<std::shared_ptr<Creature>> res;
-        for (auto c: creatures) {
-            if (!c->is_dead()) {
-                res.push_back(c);
-            }
+void Tile::remove_dead() {
+    std::vector<std::shared_ptr<Creature>> res;
+    for (auto c: creatures) {
+        if (!c->is_dead()) {
+            res.push_back(c);
         }
-        creatures = res;
     }
+    creatures = res;
+}
 
-    void bite_each_other() {
-        for (auto offender: creatures) {
-            for (auto victim: creatures) {
-                if (offender->id == victim->id)
-                    continue;
+void Tile::bite_each_other() {
+    for (auto offender: creatures) {
+        for (auto victim: creatures) {
+            if (offender->id == victim->id)
+                continue;
 
-                if ((offender->can_eat_grass && victim->is_grass) || (offender->can_eat_meat && victim->is_meat)) {
-                    victim->hp -= offender->attack;
-                    if (victim->is_dead()) {
-                        offender->hunger -= victim->nutrition_value;
-                    }
+            if ((offender->can_eat_grass && victim->is_grass) || (offender->can_eat_meat && victim->is_meat)) {
+                victim->hp -= offender->attack;
+                if (victim->is_dead()) {
+                    offender->hunger -= victim->nutrition_value;
                 }
             }
         }
     }
+}
 
-    void tick() {
-        for (auto creature: creatures) {
-            creature->tick();
-        }
-        bite_each_other();
-        remove_dead();
+void Tile::tick() {
+    for (auto creature: creatures) {
+        creature->tick();
     }
+    bite_each_other();
+    remove_dead();
+}
 
-    std::vector<std::string> to_json_lines() {
-        std::vector<std::string> res;
-        res.push_back("{");
-        res.push_back(TAB + "\"creatures\": [");
-        for (size_t i=0; i<creatures.size(); ++i) {
-            for (auto line: creatures[i]->to_json_lines()) {
-                res.push_back(TAB + TAB + line + "");
-            }
-            if (i != creatures.size() - 1) {
-                res[res.size()-1] += ",";
-            }
+std::vector<std::string> Tile::to_json_lines() {
+    std::vector<std::string> res;
+    res.push_back("{");
+    res.push_back(TAB + "\"creatures\": [");
+    for (size_t i=0; i<creatures.size(); ++i) {
+        for (auto line: creatures[i]->to_json_lines()) {
+            res.push_back(TAB + TAB + line + "");
         }
-        res.push_back(TAB + "]");
-        res.push_back("}");
-        return res;
+        if (i != creatures.size() - 1) {
+            res[res.size()-1] += ",";
+        }
     }
-};
+    res.push_back(TAB + "]");
+    res.push_back("}");
+    return res;
+}
 
 constexpr size_t WIDTH = 30;
 constexpr size_t HEIGHT = 30;
 
-struct Map {
-    std::vector<std::vector<Tile>> tiles;
-    Map() {
-        for (size_t i=0; i<HEIGHT; ++i) {
-            tiles.emplace_back(std::vector<Tile>(WIDTH));
-        }
+Map::Map() {
+    for (size_t i=0; i<HEIGHT; ++i) {
+        tiles.emplace_back(std::vector<Tile>(WIDTH));
     }
-    void tick() {
-        for (size_t i=0; i<HEIGHT; ++i) {
-            for (size_t j=0; j<WIDTH; ++j) {
-                tiles[i][j].tick();
-            }
-        }
-    }
+}
 
-    std::vector<std::string> to_json_lines() {
-        std::vector<std::string> res;
-        res.push_back("{");
-        res.push_back(TAB + "\"tiles\": [");
-        for (size_t i=0; i<HEIGHT; ++i) {
-            res.push_back(TAB + TAB + "[");
-            for (size_t j=0; j<WIDTH; ++j) {
-                res.push_back(TAB + TAB + TAB + "[");
-                for (auto line: tiles[i][j].to_json_lines()) {
-                    res.push_back(TAB + TAB + TAB + TAB + line);
-                }
-                res.push_back(TAB + TAB + TAB + ((j == WIDTH - 1) ? "]" : "],"));
-            }
-            res.push_back(TAB + TAB + ((i == HEIGHT - 1) ? "]" : "],"));
+void Map::tick() {
+    for (size_t i=0; i<HEIGHT; ++i) {
+        for (size_t j=0; j<WIDTH; ++j) {
+            tiles[i][j].tick();
         }
-        res.push_back(TAB + "]");
-        res.push_back("}");
-        return res;
     }
+}
 
-    std::string to_json() {
-        std::string res;
-        for (auto line: to_json_lines()) {
-            res += line + "\n";
+std::vector<std::string> Map::to_json_lines() {
+    std::vector<std::string> res;
+    res.push_back("{");
+    res.push_back(TAB + "\"tiles\": [");
+    for (size_t i=0; i<HEIGHT; ++i) {
+        res.push_back(TAB + TAB + "[");
+        for (size_t j=0; j<WIDTH; ++j) {
+            res.push_back(TAB + TAB + TAB + "[");
+            for (auto line: tiles[i][j].to_json_lines()) {
+                res.push_back(TAB + TAB + TAB + TAB + line);
+            }
+            res.push_back(TAB + TAB + TAB + ((j == WIDTH - 1) ? "]" : "],"));
         }
-        return res;
+        res.push_back(TAB + TAB + ((i == HEIGHT - 1) ? "]" : "],"));
     }
-};
+    res.push_back(TAB + "]");
+    res.push_back("}");
+    return res;
+}
+
+std::string Map::to_json() {
+    std::string res;
+    for (auto line: to_json_lines()) {
+        res += line + "\n";
+    }
+    return res;
+}
 
 std::shared_ptr<Creature> make_creature(CreatureType type) {
     auto res = std::make_shared<Creature>();
