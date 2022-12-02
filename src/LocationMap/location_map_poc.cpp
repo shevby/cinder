@@ -134,10 +134,37 @@ Map::Map() {
     }
 }
 
+std::shared_ptr<Creature> make_creature(CreatureType type);
+
 void Map::tick() {
     for (size_t i=0; i<HEIGHT; ++i) {
         for (size_t j=0; j<WIDTH; ++j) {
             tiles[i][j].tick();
+        }
+    }
+
+    // Reproduction
+    for (size_t i=0; i<HEIGHT; ++i) {
+        for (size_t j=0; j<WIDTH; ++j) {
+            for (auto creature: tiles[i][j].creatures) {
+                if (creature->age < creature->reproduction_age) {
+                    continue;
+                }
+
+                // If neighbouring tiles are not overpopulated, make a new creature there
+                if (i > 0 && tiles[i-1][j].creatures.size() < 4) {
+                    tiles[i-1][j].creatures.push_back(make_creature(creature->type));
+                }
+                if (i < HEIGHT-1 && tiles[i+1][j].creatures.size() < 4) {
+                    tiles[i+1][j].creatures.push_back(make_creature(creature->type));
+                }
+                if (j > 0 && tiles[i][j-1].creatures.size() < 4) {
+                    tiles[i][j-1].creatures.push_back(make_creature(creature->type));
+                }
+                if (j < WIDTH-1 && tiles[i][j+1].creatures.size() < 4) {
+                    tiles[i][j+1].creatures.push_back(make_creature(creature->type));
+                }
+            }
         }
     }
 }
@@ -189,6 +216,7 @@ std::shared_ptr<Creature> make_creature(CreatureType type) {
         res->hunger_rate = 0;
         res->nutrition_value = 0;
         res->attack = 0;
+        res->reproduction_age = 10;
         break;
     case CreatureType::Berry:
         res->symbol = "B";
@@ -202,6 +230,7 @@ std::shared_ptr<Creature> make_creature(CreatureType type) {
         res->hunger_rate = 0;
         res->nutrition_value = 5;
         res->attack = 0;
+        res->reproduction_age = 2;
         break;
     case CreatureType::Rabbit:
         res->symbol = "R";
@@ -215,6 +244,7 @@ std::shared_ptr<Creature> make_creature(CreatureType type) {
         res->hunger_rate = 1;
         res->nutrition_value = 30;
         res->attack = 10;
+        res->reproduction_age = 3;
         break;
     case CreatureType::Wolf:
         res->symbol = "W";
@@ -228,6 +258,7 @@ std::shared_ptr<Creature> make_creature(CreatureType type) {
         res->hunger_rate = 3;
         res->nutrition_value = 50;
         res->attack = 50;
+        res->reproduction_age = 4;
         break;
     case CreatureType::Human:
         res->symbol = "H";
@@ -241,6 +272,7 @@ std::shared_ptr<Creature> make_creature(CreatureType type) {
         res->hunger_rate = 3;
         res->nutrition_value = 80;
         res->attack = 20;
+        res->reproduction_age = 7;
         break;
     }
     res->hp = res->max_hp;

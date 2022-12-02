@@ -27,6 +27,7 @@ struct Creature {
     int hunger_rate;
     int nutrition_value;
     int attack;
+    int reproduction_age;
 
     void tick();
     bool is_dead() const;
