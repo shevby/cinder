@@ -3,6 +3,7 @@ import json
 import os
 import pygame
 import sys
+import time
 import urllib.request
 
 
@@ -10,12 +11,17 @@ URL = "http://localhost:6789"
 PORTRAIT_SIZE = (100, 100)
 TILE_SIZE = (2*PORTRAIT_SIZE[0], 2*PORTRAIT_SIZE[1])
 INTERVAL_BETWEEN_TILES = 20
+DISPLAY_SCROLL_SPEED = 15
+GAME_STATE_REFRESH_INTERVAL_MS = 200
 
 
 display = pygame.display.set_mode()
-
+display_offset = [0, 0]
+display_speed_direction = [0, 0]
 
 portraits_cache = {}
+
+
 def get_image(name):
     if name in portraits_cache:
         return portraits_cache[name]
@@ -27,26 +33,52 @@ def get_image(name):
     return image
 
 
+previous_request_time = 0
 json_content = '{"tiles": [[]]}'
+location = json.loads(json_content)
 while(True):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
+        elif event.type == pygame.KEYDOWN:
+            if event.key in [pygame.K_LEFT, ord('A'), ord('a')]:
+                display_speed_direction[0] -= 1
+            elif event.key in [pygame.K_RIGHT, ord('D'), ord('d')]:
+                display_speed_direction[0] += 1
+            elif event.key in [pygame.K_UP, ord('W'), ord('w')]:
+                display_speed_direction[1] -= 1
+            elif event.key in [pygame.K_DOWN, ord('S'), ord('s')]:
+                display_speed_direction[1] += 1
+            elif event.key in [ord('Q'), ord('q')]:
+                sys.exit()
+        elif event.type == pygame.KEYUP:
+            if event.key in [pygame.K_LEFT, ord('A'), ord('a')]:
+                display_speed_direction[0] += 1
+            elif event.key in [pygame.K_RIGHT, ord('D'), ord('d')]:
+                display_speed_direction[0] -= 1
+            elif event.key in [pygame.K_UP, ord('W'), ord('w')]:
+                display_speed_direction[1] += 1
+            elif event.key in [pygame.K_DOWN, ord('S'), ord('s')]:
+                display_speed_direction[1] -= 1
 
-    try:
-        with urllib.request.urlopen(URL) as f:
-            json_content = f.read().decode('utf-8')
-    except:
-        pass
+    display_offset[0] += display_speed_direction[0] * DISPLAY_SCROLL_SPEED
+    display_offset[1] += display_speed_direction[1] * DISPLAY_SCROLL_SPEED
+
+    if time.time() >= previous_request_time + 0.001 * GAME_STATE_REFRESH_INTERVAL_MS:
+        try:
+            with urllib.request.urlopen(URL) as f:
+                json_content = f.read().decode('utf-8')
+        except:
+            pass
+
+        location = json.loads(json_content)
 
     display.fill((145, 132, 34))
 
-    location = json.loads(json_content)
-
     for i in range(len(location['tiles'])):
         for j in range(len(location['tiles'][i])):
-            base_x = i * (TILE_SIZE[0] + INTERVAL_BETWEEN_TILES)
-            base_y = j * (TILE_SIZE[1] + INTERVAL_BETWEEN_TILES)
+            base_x = i * (TILE_SIZE[0] + INTERVAL_BETWEEN_TILES) + display_offset[0]
+            base_y = j * (TILE_SIZE[1] + INTERVAL_BETWEEN_TILES) + display_offset[1]
             pygame.draw.rect(display, (77, 3, 204), ((base_x, base_y), (2*PORTRAIT_SIZE[0], 2*PORTRAIT_SIZE[1])))
 
             creatures = location['tiles'][i][j][0]['creatures']
@@ -60,7 +92,5 @@ while(True):
                 elif k == 3:
                     display.blit(get_image(creature['type'] + '.png'), (base_x + PORTRAIT_SIZE[0], base_y + PORTRAIT_SIZE[1]))
 
-
     pygame.display.update()
-    pygame.time.delay(100)
-
+    pygame.time.delay(20)
