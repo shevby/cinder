@@ -1,5 +1,6 @@
 from collections import defaultdict
 import json
+import math
 import os
 import pygame
 import sys
@@ -14,6 +15,27 @@ INTERVAL_BETWEEN_TILES = 20
 DISPLAY_SCROLL_SPEED = 15
 GAME_STATE_REFRESH_INTERVAL_MS = 200
 
+
+class FpsMeter:
+    def __init__(self):
+        self.current_second = math.floor(time.time())
+        self.fps_previous_second = 0
+        self.fps_this_second = 0
+
+    def tick(self):
+        current_second = math.floor(time.time())
+        if current_second == self.current_second:
+            self.fps_this_second += 1
+        else:
+            self.fps_previous_second = self.fps_this_second
+            self.fps_this_second = 1
+            self.current_second = current_second
+
+    def fps(self):
+        return self.fps_previous_second
+
+
+pygame.font.init()
 
 display = pygame.display.set_mode()
 display_offset = [0, 0]
@@ -36,6 +58,7 @@ def get_image(name):
 previous_request_time = 0
 json_content = '{"tiles": [[]]}'
 location = json.loads(json_content)
+fps_meter = FpsMeter()
 while(True):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -92,5 +115,11 @@ while(True):
                 elif k == 3:
                     display.blit(get_image(creature['type'] + '.png'), (base_x + PORTRAIT_SIZE[0], base_y + PORTRAIT_SIZE[1]))
 
+    font = pygame.font.SysFont(pygame.font.get_default_font(), 40)
+    caption = font.render(f"FPS: {fps_meter.fps()}", True, (255, 0, 0))
+    display.blit(caption, (100, 0))
+
     pygame.display.update()
     pygame.time.delay(20)
+
+    fps_meter.tick()
