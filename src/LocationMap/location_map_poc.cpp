@@ -50,11 +50,14 @@ bool Creature::is_dead() const {
     return hp < 0;
 }
 
-std::vector<std::string> Creature::to_json_lines() const {
+std::vector<std::string> Creature::to_json_lines(bool full_map) const {
 #define CREATURE_JSON_ADD_INT(PARAM) \
     res.push_back(TAB + "\"" #PARAM "\": " + std::to_string(PARAM) + ",");
     std::vector<std::string> res;
     res.push_back("{");
+    if (!full_map) {
+        goto end_of_details;
+    }
     CREATURE_JSON_ADD_INT(id)
     CREATURE_JSON_ADD_INT(hp)
     CREATURE_JSON_ADD_INT(max_hp)
@@ -69,6 +72,7 @@ std::vector<std::string> Creature::to_json_lines() const {
     CREATURE_JSON_ADD_INT(hunger_rate)
     CREATURE_JSON_ADD_INT(nutrition_value)
     CREATURE_JSON_ADD_INT(attack)
+    end_of_details:
     res.push_back(TAB + "\"type\": \"" + creatureTypeToString(type) + "\"");
     res.push_back("}");
     return res;
@@ -108,12 +112,12 @@ void Tile::tick() {
     remove_dead();
 }
 
-std::vector<std::string> Tile::to_json_lines() {
+std::vector<std::string> Tile::to_json_lines(bool full_map) {
     std::vector<std::string> res;
     res.push_back("{");
     res.push_back(TAB + "\"creatures\": [");
     for (size_t i=0; i<creatures.size(); ++i) {
-        for (auto line: creatures[i]->to_json_lines()) {
+        for (auto line: creatures[i]->to_json_lines(full_map)) {
             res.push_back(TAB + TAB + line + "");
         }
         if (i != creatures.size() - 1) {
@@ -169,7 +173,7 @@ void Map::tick() {
     }
 }
 
-std::vector<std::string> Map::to_json_lines() {
+std::vector<std::string> Map::to_json_lines(bool full_map) {
     std::vector<std::string> res;
     res.push_back("{");
     res.push_back(TAB + "\"tiles\": [");
@@ -177,7 +181,7 @@ std::vector<std::string> Map::to_json_lines() {
         res.push_back(TAB + TAB + "[");
         for (size_t j=0; j<WIDTH; ++j) {
             res.push_back(TAB + TAB + TAB + "[");
-            for (auto line: tiles[i][j].to_json_lines()) {
+            for (auto line: tiles[i][j].to_json_lines(full_map)) {
                 res.push_back(TAB + TAB + TAB + TAB + line);
             }
             res.push_back(TAB + TAB + TAB + ((j == WIDTH - 1) ? "]" : "],"));
@@ -189,9 +193,9 @@ std::vector<std::string> Map::to_json_lines() {
     return res;
 }
 
-std::string Map::to_json() {
+std::string Map::to_json(bool full_map) {
     std::string res;
-    for (auto line: to_json_lines()) {
+    for (auto line: to_json_lines(full_map)) {
         res += line + "\n";
     }
     return res;
@@ -297,7 +301,7 @@ std::ostream& operator<< (std::ostream& stream, const Map& map) {
 Map map;
 
 std::string get_map_content() {
-    return map.to_json();
+    return map.to_json(false);
 }
 
 int main() {

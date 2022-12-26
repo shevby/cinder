@@ -31,7 +31,7 @@ struct Creature {
 
     void tick();
     bool is_dead() const;
-    std::vector<std::string> to_json_lines() const;
+    std::vector<std::string> to_json_lines(bool full_map) const;
 };
 
 struct Tile {
@@ -40,7 +40,7 @@ struct Tile {
     void remove_dead();
     void bite_each_other();
     void tick();
-    std::vector<std::string> to_json_lines();
+    std::vector<std::string> to_json_lines(bool full_map);
 };
 
 struct Map {
@@ -48,6 +48,6 @@ struct Map {
     Map();
 
     void tick();
-    std::vector<std::string> to_json_lines();
-    std::string to_json();
+    std::vector<std::string> to_json_lines(bool full_map);
+    std::string to_json(bool full_map = true);
 };
