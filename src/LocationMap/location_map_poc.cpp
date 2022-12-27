@@ -3,6 +3,7 @@
 #include <unistd.h>
 
 #include "LocationMap.h"
+#include "Gzip.h"
 #include "WebServer.h"
 
 const std::string TAB = "    "; // 4 spaces
@@ -314,7 +315,7 @@ int main() {
         }
     }
 
-    std::thread web_thread(server_thread, get_map_content);
+    std::thread web_thread(server_thread, get_map_content, CompressionMethod::NO_COMPRESSION);
 
     while(true) {
         std::cout << "-------------------------------------------------------------------\n\n";

@@ -2,11 +2,13 @@
 #include <iostream>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <vector>
 #include <unistd.h>
 
 #include "WebServer.h"
+#include "Gzip.h"
 
-void server_thread(std::function<std::string()> get_content) {
+void server_thread(std::function<std::string()> get_content, CompressionMethod compression_method) {
     struct sockaddr_in socket_address;
     memset(&socket_address, 0, sizeof(socket_address));
     socket_address.sin_family = AF_INET;
@@ -44,7 +46,37 @@ void server_thread(std::function<std::string()> get_content) {
             std::cerr << "Failed to read\n";
         }
 
-        std::string reply = "HTTP/1.0 200 OK\n\n" + get_content();
+        std::vector<std::string> headers = {"HTTP/1.0 200 OK"};
+        std::string payload;
+
+        switch(compression_method) {
+        case CompressionMethod::NO_COMPRESSION: {
+            payload = get_content();
+            break;
+        }
+        case CompressionMethod::DEFALTE: {
+            headers.push_back("Content-Encoding: deflate");
+            payload = deflate(get_content());
+            break;
+        }
+        case CompressionMethod::GZIP: {
+            headers.push_back("Content-Encoding: gzip");
+            payload = gzip_compress(get_content());
+            break;
+        }
+        default: {
+            std::cerr << "Unsupported compression method\n";
+            payload = get_content();
+        }
+        }
+
+        std::string reply;
+
+        for (auto header: headers) {
+            reply += header + "\n";
+        }
+
+        reply += "\n" + payload;
 
         n = write(new_fd, reply.c_str(), reply.size());
         if (n < 0) {
