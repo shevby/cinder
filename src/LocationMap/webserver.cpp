@@ -39,12 +39,16 @@ void server_thread(std::function<std::string()> get_content, CompressionMethod c
             std::cerr << "Failed to accept\n";
         }
 
-        char buffer[1025];
+        const int MAX_READ_LEN = 1024;
+        char buffer[MAX_READ_LEN + 1];
 
-        int n = read(new_fd, &buffer, 1024);
+        int n = read(new_fd, &buffer, MAX_READ_LEN);
         if (n < 0) {
             std::cerr << "Failed to read\n";
+            return;
         }
+
+        buffer[n + 1] = '\0';
 
         std::vector<std::string> headers = {"HTTP/1.0 200 OK"};
         std::string payload;
