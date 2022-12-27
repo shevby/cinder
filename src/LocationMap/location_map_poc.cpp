@@ -142,6 +142,8 @@ Map::Map() {
 std::shared_ptr<Creature> make_creature(CreatureType type);
 
 void Map::tick() {
+    semaphore.acquire();
+
     for (size_t i=0; i<HEIGHT; ++i) {
         for (size_t j=0; j<WIDTH; ++j) {
             tiles[i][j].tick();
@@ -172,6 +174,10 @@ void Map::tick() {
             }
         }
     }
+
+    *map_cache = to_json(false, "");
+
+    semaphore.release();
 }
 
 std::vector<std::string> Map::to_json_lines(bool full_map, const std::string &tab) const {
@@ -199,6 +205,13 @@ std::string Map::to_json(bool full_map, const std::string &tab) const {
     for (auto line: to_json_lines(full_map, tab)) {
         res += line + "\n";
     }
+    return res;
+}
+
+std::shared_ptr<std::string> Map::get_content() {
+    semaphore.acquire();
+    std::shared_ptr<std::string> res = map_cache;
+    semaphore.release();
     return res;
 }
 
@@ -302,7 +315,9 @@ std::ostream& operator<< (std::ostream& stream, const Map& map) {
 Map map;
 
 std::string get_map_content() {
-    return map.to_json(false, "");
+    std::shared_ptr<std::string> ptr = map.get_content();
+    std::string content = *ptr;
+    return content;
 }
 
 int main() {
