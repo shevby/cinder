@@ -50,9 +50,9 @@ bool Creature::is_dead() const {
     return hp < 0;
 }
 
-std::vector<std::string> Creature::to_json_lines(bool full_map) const {
+std::vector<std::string> Creature::to_json_lines(bool full_map, const std::string &tab) const {
 #define CREATURE_JSON_ADD_INT(PARAM) \
-    res.push_back(TAB + "\"" #PARAM "\": " + std::to_string(PARAM) + ",");
+    res.push_back(tab + "\"" #PARAM "\": " + std::to_string(PARAM) + ",");
     std::vector<std::string> res;
     res.push_back("{");
     if (!full_map) {
@@ -73,7 +73,7 @@ std::vector<std::string> Creature::to_json_lines(bool full_map) const {
     CREATURE_JSON_ADD_INT(nutrition_value)
     CREATURE_JSON_ADD_INT(attack)
     end_of_details:
-    res.push_back(TAB + "\"type\": \"" + creatureTypeToString(type) + "\"");
+    res.push_back(tab + "\"type\": \"" + creatureTypeToString(type) + "\"");
     res.push_back("}");
     return res;
 }
@@ -112,19 +112,19 @@ void Tile::tick() {
     remove_dead();
 }
 
-std::vector<std::string> Tile::to_json_lines(bool full_map) {
+std::vector<std::string> Tile::to_json_lines(bool full_map, const std::string &tab) const {
     std::vector<std::string> res;
     res.push_back("{");
-    res.push_back(TAB + "\"creatures\": [");
+    res.push_back(tab + "\"creatures\": [");
     for (size_t i=0; i<creatures.size(); ++i) {
-        for (auto line: creatures[i]->to_json_lines(full_map)) {
-            res.push_back(TAB + TAB + line + "");
+        for (auto line: creatures[i]->to_json_lines(full_map, tab)) {
+            res.push_back(tab + tab + line + "");
         }
         if (i != creatures.size() - 1) {
             res[res.size()-1] += ",";
         }
     }
-    res.push_back(TAB + "]");
+    res.push_back(tab + "]");
     res.push_back("}");
     return res;
 }
@@ -173,29 +173,29 @@ void Map::tick() {
     }
 }
 
-std::vector<std::string> Map::to_json_lines(bool full_map) {
+std::vector<std::string> Map::to_json_lines(bool full_map, const std::string &tab) const {
     std::vector<std::string> res;
     res.push_back("{");
-    res.push_back(TAB + "\"tiles\": [");
+    res.push_back(tab + "\"tiles\": [");
     for (size_t i=0; i<HEIGHT; ++i) {
-        res.push_back(TAB + TAB + "[");
+        res.push_back(tab + tab + "[");
         for (size_t j=0; j<WIDTH; ++j) {
-            res.push_back(TAB + TAB + TAB + "[");
-            for (auto line: tiles[i][j].to_json_lines(full_map)) {
-                res.push_back(TAB + TAB + TAB + TAB + line);
+            res.push_back(tab + tab + tab + "[");
+            for (auto line: tiles[i][j].to_json_lines(full_map, tab)) {
+                res.push_back(tab + tab + tab + tab + line);
             }
-            res.push_back(TAB + TAB + TAB + ((j == WIDTH - 1) ? "]" : "],"));
+            res.push_back(tab + tab + tab + ((j == WIDTH - 1) ? "]" : "],"));
         }
-        res.push_back(TAB + TAB + ((i == HEIGHT - 1) ? "]" : "],"));
+        res.push_back(tab + tab + ((i == HEIGHT - 1) ? "]" : "],"));
     }
-    res.push_back(TAB + "]");
+    res.push_back(tab + "]");
     res.push_back("}");
     return res;
 }
 
-std::string Map::to_json(bool full_map) {
+std::string Map::to_json(bool full_map, const std::string &tab) const {
     std::string res;
-    for (auto line: to_json_lines(full_map)) {
+    for (auto line: to_json_lines(full_map, tab)) {
         res += line + "\n";
     }
     return res;
@@ -301,7 +301,7 @@ std::ostream& operator<< (std::ostream& stream, const Map& map) {
 Map map;
 
 std::string get_map_content() {
-    return map.to_json(false);
+    return map.to_json(false, "");
 }
 
 int main() {
