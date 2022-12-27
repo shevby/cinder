@@ -2,3 +2,5 @@ build
 
 *.swp
 a.out
+
+test_location_map
