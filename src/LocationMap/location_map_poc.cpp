@@ -119,7 +119,7 @@ std::vector<std::string> Tile::to_json_lines(bool full_map, const std::string &t
     res.push_back(tab + "\"creatures\": [");
     for (size_t i=0; i<creatures.size(); ++i) {
         for (auto line: creatures[i]->to_json_lines(full_map, tab)) {
-            res.push_back(tab + tab + line + "");
+            res.push_back(tab + tab + line);
         }
         if (i != creatures.size() - 1) {
             res[res.size()-1] += ",";

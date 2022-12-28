@@ -1,3 +1,5 @@
+#pragma once
+
 #include <memory>
 #include <semaphore>
 #include <string>
@@ -10,6 +12,8 @@ enum class CreatureType {
     Wolf,
     Human,
 };
+
+std::string creatureTypeToString(CreatureType type);
 
 struct Creature {
     CreatureType type;
