@@ -7,7 +7,7 @@ bool is_valid_json(const std::string &json) {
     static const std::string filename = "/tmp/is_valid_json.tmp";
     save_string_to_file(json, filename);
 
-    return !system(("python3 ./is_valid_json.py " + filename).c_str());
+    return !system(("python3 ../is_valid_json.py " + filename).c_str());
 }
 
 void save_string_to_file(const std::string &content, const std::string &filename) {
