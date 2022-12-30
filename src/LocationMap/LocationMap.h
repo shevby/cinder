@@ -39,6 +39,8 @@ struct Creature {
     std::vector<std::string> to_json_lines(bool full_map, const std::string &tab) const;
 };
 
+std::shared_ptr<Creature> make_creature(CreatureType type);
+
 struct Tile {
     std::vector<std::shared_ptr<Creature>> creatures;
 
@@ -63,3 +65,5 @@ private:
 
     std::shared_ptr<std::string> map_cache = std::make_shared<std::string>("");
 };
+
+std::ostream& operator<< (std::ostream& stream, const Map& map);

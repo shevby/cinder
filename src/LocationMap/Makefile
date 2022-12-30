@@ -1,13 +1,16 @@
+SOURCES = LocationMapStateCache.cpp LocationMapStateShort.cpp Gzip.cpp webserver.cpp HttpRequest.cpp location_map_poc.cpp
+CXX_FLAGS = -pthread -std=c++20
+
 run: all
 	./a.out
 
 all: build_app build_test
 
 build_app:
-	g++ location_map_poc.cpp LocationMapStateCache.cpp LocationMapStateShort.cpp Gzip.cpp webserver.cpp HttpRequest.cpp -pthread -std=c++20
+	g++ $(CXX_FLAGS) $(SOURCES) LocationMapMain.cpp
 
 build_test:
-	g++ test_location_map.cpp LocationMapStateCache.cpp LocationMapStateShort.cpp Gzip.cpp webserver.cpp HttpRequest.cpp -pthread -std=c++20 -o test_location_map
+	g++ $(CXX_FLAGS) $(SOURCES) test_location_map.cpp -o test_location_map
 
 clean:
 	rm a.out
