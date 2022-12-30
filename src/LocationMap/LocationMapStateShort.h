@@ -20,7 +20,7 @@ struct LocationTileShortState {
 };
 
 struct LocationMapShortState {
-    std::vector<std::vector<LocationTileShortState>> tiles;
+    std::vector<LocationTileShortState> tiles;
     uint64_t tick_id;
     uint32_t width;
     uint32_t height;
