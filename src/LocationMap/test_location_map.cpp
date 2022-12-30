@@ -6,6 +6,8 @@
 #include <cstring>
 #include <iostream>
 
+#include <catch2/catch_test_macros.hpp>
+
 #define TEST_EQUAL(first, second) \
     if (first != second) { \
         std::cerr << __FILE__ << ":" << __LINE__ << "\n"; \
@@ -23,11 +25,6 @@
         std::cerr << "length of " #second " = " << second.size() << "\n"; \
         std::cerr << "----------------------------\n"; \
     }
-
-#define TOKEN_COMBINE(A, B) A ## B
-#define TOKEN_COMBINE2(A, B) TOKEN_COMBINE(A, B)
-#define TEST_CASE(A, B) void TOKEN_COMBINE2(catch2_test_function_imitation_, __LINE__)()
-#define REQUIRE(X) TEST_EQUAL(X, true)
 
 std::string merge_lines(const std::vector<std::string> &lines) {
     return join(lines, "\n");
@@ -83,8 +80,6 @@ int main() {
         TEST_EQUAL_VECTOR(r.headers, std::vector<std::string>());
         TEST_EQUAL(r.body, "Hello\n\n");
     }
-
-#include "/tmp/test_location_map.inc"
 }
 
 TEST_CASE("CreatureShortState must produce valid JSON", "[CreatureShortState]") {
