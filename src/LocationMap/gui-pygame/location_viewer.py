@@ -63,9 +63,9 @@ class Creature:
 
 class Tile:
     def __init__(self):
-        self.creatures = {}
+        self.creatures = []
 
-    def update(updates_dict):
+    def update(self, updates_dict):
         creatures = updates_dict.get('creatures', [])
         self.creatues = []
         for creature in creatures:
@@ -79,11 +79,14 @@ class Map:
         self.tick = 0
         self.tiles = []
 
-    def get_tile(row, column):
-        if row not in self.tiles:
+    def get_tile(self, row, column):
+        print(row, column)
+        if row >= len(self.tiles):
+            return Tile()
+        if column >= len(self.tiles[row]):
             return Tile()
 
-        return self.tiles[row].get(column, Tile())
+        return self.tiles[row][column]
 
     def update(self, updates_dict):
         if 'height' in updates_dict:
@@ -106,18 +109,18 @@ class Map:
             if row < 0 or row > MAX_LOCATION_MAP_SIZE or column < 0 or column > MAX_LOCATION_MAP_SIZE:
                 continue
 
-            while row not in self.tiles:
+            while row >= len(self.tiles):
                 self.tiles.append([])
 
-            while column not in self.tiles[row]:
-                self.tiles[row].append([])
+            while column >= len(self.tiles[row]):
+                self.tiles[row].append(Tile())
 
             self.tiles[row][column].update(tile_update)
 
 
 location_map = Map()
 previous_request_time = 0
-json_content = '{"tiles": [[]]}'
+json_content = '{"tiles": []}'
 location = json.loads(json_content)
 fps_meter = FpsMeter()
 while(True):
@@ -160,22 +163,22 @@ while(True):
 
     display.fill((145, 132, 34))
 
-    for i in range(len(location['tiles'])):
-        for j in range(len(location['tiles'][i])):
+    for i in range(len(location_map.tiles)):
+        for j in range(len(location_map.tiles[i])):
             base_x = i * (TILE_SIZE[0] + INTERVAL_BETWEEN_TILES) + display_offset[0]
             base_y = j * (TILE_SIZE[1] + INTERVAL_BETWEEN_TILES) + display_offset[1]
             pygame.draw.rect(display, (77, 3, 204), ((base_x, base_y), (2*PORTRAIT_SIZE[0], 2*PORTRAIT_SIZE[1])))
 
-            creatures = location['tiles'][i][j][0]['creatures']
+            creatures = location_map.get_tile(i, j).creatures
             for k, creature in enumerate(creatures):
                 if k == 0:
-                    display.blit(get_image(creature['type'] + '.png'), (base_x, base_y))
+                    display.blit(get_image(creature._type + '.png'), (base_x, base_y))
                 elif k == 1:
-                    display.blit(get_image(creature['type'] + '.png'), (base_x + PORTRAIT_SIZE[0], base_y))
+                    display.blit(get_image(creature._type + '.png'), (base_x + PORTRAIT_SIZE[0], base_y))
                 elif k == 2:
-                    display.blit(get_image(creature['type'] + '.png'), (base_x, base_y + PORTRAIT_SIZE[1]))
+                    display.blit(get_image(creature._type + '.png'), (base_x, base_y + PORTRAIT_SIZE[1]))
                 elif k == 3:
-                    display.blit(get_image(creature['type'] + '.png'), (base_x + PORTRAIT_SIZE[0], base_y + PORTRAIT_SIZE[1]))
+                    display.blit(get_image(creature._type + '.png'), (base_x + PORTRAIT_SIZE[0], base_y + PORTRAIT_SIZE[1]))
 
     font = pygame.font.SysFont(pygame.font.get_default_font(), 40)
     caption = font.render(f"FPS: {fps_meter.fps()}", True, (255, 0, 0))

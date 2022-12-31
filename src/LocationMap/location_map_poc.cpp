@@ -4,6 +4,8 @@
 #include "LocationMap.h"
 #include "Gzip.h"
 #include "WebServer.h"
+#include "JsonConfig.h"
+#include "LocationMapStateShort.h"
 
 const std::string TAB = "    "; // 4 spaces
 
@@ -168,27 +170,27 @@ void Map::tick() {
 
     ++tick_id;
 
+    short_state_cache->width = width;
+    short_state_cache->height = height;
+    short_state_cache->tick_id = tick_id;
+
+    short_state_cache->tiles.clear();
+
+    for (size_t row=0; row<tiles.size(); ++row) {
+        for (size_t column=0; column<tiles[row].size(); ++column) {
+            LocationTileShortState tile_short(tiles[row][column]);
+            tile_short.row = row;
+            tile_short.column = column;
+            short_state_cache->tiles.push_back(tile_short);
+        }
+    }
+
     semaphore.release();
 }
 
 std::vector<std::string> Map::to_json_lines(bool full_map, const std::string &tab) const {
-    std::vector<std::string> res;
-    res.push_back("{");
-    res.push_back(tab + "\"tiles\": [");
-    for (size_t i=0; i<height; ++i) {
-        res.push_back(tab + tab + "[");
-        for (size_t j=0; j<width; ++j) {
-            res.push_back(tab + tab + tab + "[");
-            for (auto line: tiles[i][j].to_json_lines(full_map, tab)) {
-                res.push_back(tab + tab + tab + tab + line);
-            }
-            res.push_back(tab + tab + tab + ((j == width - 1) ? "]" : "],"));
-        }
-        res.push_back(tab + tab + ((i == height - 1) ? "]" : "],"));
-    }
-    res.push_back(tab + "]");
-    res.push_back("}");
-    return res;
+    LocationMapShortState map_short(*this);
+    return map_short.to_json_lines(JsonConfig());
 }
 
 std::string Map::to_json(bool full_map, const std::string &tab) const {
@@ -202,6 +204,13 @@ std::string Map::to_json(bool full_map, const std::string &tab) const {
 std::shared_ptr<std::string> Map::get_content() {
     semaphore.acquire();
     std::shared_ptr<std::string> res = map_cache;
+    semaphore.release();
+    return res;
+}
+
+std::shared_ptr<LocationMapShortState> Map::get_short_state() {
+    semaphore.acquire();
+    std::shared_ptr<LocationMapShortState> res = short_state_cache;
     semaphore.release();
     return res;
 }

@@ -12,7 +12,7 @@ LocationTileShortState::LocationTileShortState(Tile t) {
     }
 }
 
-LocationMapShortState::LocationMapShortState(Map map)
+LocationMapShortState::LocationMapShortState(const Map &map)
     : width(map.get_width())
     , height(map.get_height())
     , tick_id(map.get_tick_id())

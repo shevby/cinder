@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string>
 #include <memory>
 #include <vector>
@@ -26,7 +28,7 @@ struct LocationTileShortState {
 
 struct LocationMapShortState {
     LocationMapShortState() = default;
-    LocationMapShortState(Map map);
+    LocationMapShortState(const Map &map);
 
     std::vector<LocationTileShortState> tiles;
     uint64_t tick_id;

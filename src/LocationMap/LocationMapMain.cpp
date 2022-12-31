@@ -3,6 +3,7 @@
 #include <thread>
 
 #include "LocationMap.h"
+#include "LocationMapStateShort.h"
 #include "WebServer.h"
 
 constexpr size_t WIDTH = 30;
@@ -11,9 +12,9 @@ constexpr size_t HEIGHT = 30;
 Map map(WIDTH, HEIGHT);
 
 std::string get_map_content() {
-    std::shared_ptr<std::string> ptr = map.get_content();
-    std::string content = *ptr;
-    return content;
+    auto short_map = map.get_short_state();
+    auto content = short_map->to_json(JsonConfig());
+    return *content;
 }
 
 CreatureType random_creature() {
@@ -28,8 +29,8 @@ CreatureType random_creature() {
 }
 
 int main() {
-    for (size_t i=0; i<HEIGHT; ++i) {
-        for (size_t j=0; j<WIDTH; ++j) {
+    for (size_t i=0; i<map.get_height(); ++i) {
+        for (size_t j=0; j<map.get_width(); ++j) {
             int creature_number = rand() % 5;
             for (int k=0; k<creature_number; ++k) {
                 map.tiles[i][j].creatures.emplace_back(make_creature(random_creature()));
