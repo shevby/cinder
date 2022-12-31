@@ -14,6 +14,7 @@ TILE_SIZE = (2*PORTRAIT_SIZE[0], 2*PORTRAIT_SIZE[1])
 INTERVAL_BETWEEN_TILES = 20
 DISPLAY_SCROLL_SPEED = 15
 GAME_STATE_REFRESH_INTERVAL_MS = 200
+MAX_LOCATION_MAP_SIZE = 100000
 
 
 class FpsMeter:
@@ -55,6 +56,66 @@ def get_image(name):
     return image
 
 
+class Creature:
+    def __init__(self, _type):
+        self._type = _type
+
+
+class Tile:
+    def __init__(self):
+        self.creatures = {}
+
+    def update(updates_dict):
+        creatures = updates_dict.get('creatures', [])
+        self.creatues = []
+        for creature in creatures:
+            self.creatures.append(Creature(creature['type']))
+
+
+class Map:
+    def __init__(self):
+        self.width = 0
+        self.height = 0
+        self.tick = 0
+        self.tiles = []
+
+    def get_tile(row, column):
+        if row not in self.tiles:
+            return Tile()
+
+        return self.tiles[row].get(column, Tile())
+
+    def update(self, updates_dict):
+        if 'height' in updates_dict:
+            self.height = updates_dict['height']
+
+        if 'width' in updates_dict:
+            self.height = updates_dict['width']
+
+        if 'tick_id' in updates_dict:
+            self.height = updates_dict['tick_id']
+
+        tiles_updates = updates_dict.get('tiles', [])
+        for tile_update in tiles_updates:
+            if 'row' not in tile_update or 'column' not in tile_update:
+                continue
+
+            row = tile_update['row']
+            column = tile_update['column']
+
+            if row < 0 or row > MAX_LOCATION_MAP_SIZE or column < 0 or column > MAX_LOCATION_MAP_SIZE:
+                continue
+
+            while row not in self.tiles:
+                self.tiles.append([])
+
+            while column not in self.tiles[row]:
+                self.tiles[row].append([])
+
+            self.tiles[row][column].update(tile_update)
+
+
+location_map = Map()
 previous_request_time = 0
 json_content = '{"tiles": [[]]}'
 location = json.loads(json_content)
@@ -95,6 +156,7 @@ while(True):
             pass
 
         location = json.loads(json_content)
+        location_map.update(location)
 
     display.fill((145, 132, 34))
 
