@@ -17,6 +17,7 @@ set (
     HttpRequest.cpp
     location_map_poc.cpp
     utils.cpp
+    JsonConfig.cpp
 )
 
 include_directories (

@@ -11,48 +11,32 @@ std::vector<std::string> CreatureShortState::to_json_lines(JsonConfig json_confi
 }
 
 std::vector<std::string> LocationTileShortState::to_json_lines(JsonConfig json_config) {
-    std::vector<std::string> res = {
-        "{",
-        json_config.tab + "\"row\": " + std::to_string(row),
-        json_config.tab + "\"column\": " + std::to_string(column),
-        json_config.tab + "\"creatures\": ["
-    };
-
-    for (size_t i=0; i<creatures.size(); ++i) {
-        for (auto line: creatures[i].to_json_lines(json_config)) {
-            res.push_back(json_config.tab + json_config.tab + line);
-        }
-        if (i != creatures.size() - 1) {
-            res[res.size()-1] += ",";
-        }
+    JsonSerializer creatures_json(json_config);;
+    for (auto creature: creatures) {
+        creatures_json.add_to_array(creature.to_json_lines(json_config));
     }
-    res.push_back(json_config.tab + "]");
-    res.push_back("}");
-    return res;
+
+    JsonSerializer json(json_config);
+    json.add("row", row);
+    json.add("column", column);
+    json.add("creatures", creatures_json.get_json_lines(true));
+
+    return json.get_json_lines();
 }
 
 std::vector<std::string> LocationMapShortState::to_json_lines(JsonConfig json_config) {
-    std::vector<std::string> res = {
-        "{",
-        json_config.tab + "\"tick_id\": " + std::to_string(tick_id),
-        json_config.tab + "\"width\": "   + std::to_string(width),
-        json_config.tab + "\"height\": "  + std::to_string(height),
-        json_config.tab + "\"tiles: [",
-    };
-
-    for (size_t i=0; i<tiles.size(); ++i) {
-        for (auto line: tiles[i].to_json_lines(json_config)) {
-            res.push_back(json_config.tab + json_config.tab + line);
-        }
-        if (i != tiles.size() - 1) {
-            res[res.size()-1] += ",";
-        }
+    JsonSerializer tiles_json(json_config);
+    for (auto tile: tiles) {
+        tiles_json.add_to_array(tile.to_json_lines(json_config));
     }
 
-    res.push_back(json_config.tab + "]");
-    res.push_back("}");
+    JsonSerializer json(json_config);
+    json.add("tick_id", tick_id);
+    json.add("width", width);
+    json.add("height", height);
+    json.add("tiles", tiles_json.get_json_lines(true));
 
-    return res;
+    return json.get_json_lines();
 }
 
 std::shared_ptr<std::string> LocationMapShortState::to_json(JsonConfig json_config) {
