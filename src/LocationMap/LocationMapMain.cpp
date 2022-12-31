@@ -8,7 +8,7 @@
 constexpr size_t WIDTH = 30;
 constexpr size_t HEIGHT = 30;
 
-Map map;
+Map map(WIDTH, HEIGHT);
 
 std::string get_map_content() {
     std::shared_ptr<std::string> ptr = map.get_content();

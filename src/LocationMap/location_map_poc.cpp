@@ -118,12 +118,13 @@ std::vector<std::string> Tile::to_json_lines(bool full_map, const std::string &t
     return res;
 }
 
-constexpr size_t WIDTH = 30;
-constexpr size_t HEIGHT = 30;
-
-Map::Map() {
-    for (size_t i=0; i<HEIGHT; ++i) {
-        tiles.emplace_back(std::vector<Tile>(WIDTH));
+Map::Map(uint32_t _width, uint32_t _height)
+    : width(_width)
+    , height(_height)
+    , tick_id(1)
+{
+    for (size_t i=0; i<height; ++i) {
+        tiles.emplace_back(std::vector<Tile>(width));
     }
 }
 
@@ -132,15 +133,15 @@ std::shared_ptr<Creature> make_creature(CreatureType type);
 void Map::tick() {
     semaphore.acquire();
 
-    for (size_t i=0; i<HEIGHT; ++i) {
-        for (size_t j=0; j<WIDTH; ++j) {
+    for (size_t i=0; i<height; ++i) {
+        for (size_t j=0; j<width; ++j) {
             tiles[i][j].tick();
         }
     }
 
     // Reproduction
-    for (size_t i=0; i<HEIGHT; ++i) {
-        for (size_t j=0; j<WIDTH; ++j) {
+    for (size_t i=0; i<height; ++i) {
+        for (size_t j=0; j<width; ++j) {
             for (auto creature: tiles[i][j].creatures) {
                 if (creature->age < creature->reproduction_age) {
                     continue;
@@ -150,13 +151,13 @@ void Map::tick() {
                 if (i > 0 && tiles[i-1][j].creatures.size() < 4) {
                     tiles[i-1][j].creatures.push_back(make_creature(creature->type));
                 }
-                if (i < HEIGHT-1 && tiles[i+1][j].creatures.size() < 4) {
+                if (i < height-1 && tiles[i+1][j].creatures.size() < 4) {
                     tiles[i+1][j].creatures.push_back(make_creature(creature->type));
                 }
                 if (j > 0 && tiles[i][j-1].creatures.size() < 4) {
                     tiles[i][j-1].creatures.push_back(make_creature(creature->type));
                 }
-                if (j < WIDTH-1 && tiles[i][j+1].creatures.size() < 4) {
+                if (j < width-1 && tiles[i][j+1].creatures.size() < 4) {
                     tiles[i][j+1].creatures.push_back(make_creature(creature->type));
                 }
             }
@@ -165,6 +166,8 @@ void Map::tick() {
 
     *map_cache = to_json(false, "");
 
+    ++tick_id;
+
     semaphore.release();
 }
 
@@ -172,16 +175,16 @@ std::vector<std::string> Map::to_json_lines(bool full_map, const std::string &ta
     std::vector<std::string> res;
     res.push_back("{");
     res.push_back(tab + "\"tiles\": [");
-    for (size_t i=0; i<HEIGHT; ++i) {
+    for (size_t i=0; i<height; ++i) {
         res.push_back(tab + tab + "[");
-        for (size_t j=0; j<WIDTH; ++j) {
+        for (size_t j=0; j<width; ++j) {
             res.push_back(tab + tab + tab + "[");
             for (auto line: tiles[i][j].to_json_lines(full_map, tab)) {
                 res.push_back(tab + tab + tab + tab + line);
             }
-            res.push_back(tab + tab + tab + ((j == WIDTH - 1) ? "]" : "],"));
+            res.push_back(tab + tab + tab + ((j == width - 1) ? "]" : "],"));
         }
-        res.push_back(tab + tab + ((i == HEIGHT - 1) ? "]" : "],"));
+        res.push_back(tab + tab + ((i == height - 1) ? "]" : "],"));
     }
     res.push_back(tab + "]");
     res.push_back("}");
@@ -286,16 +289,28 @@ std::shared_ptr<Creature> make_creature(CreatureType type) {
 }
 
 std::ostream& operator<< (std::ostream& stream, const Map& map) {
-    for (size_t i=0; i<HEIGHT; ++i) {
-        for (size_t j=0; j<WIDTH; ++j) {
+    for (size_t i=0; i<map.get_height(); ++i) {
+        for (size_t j=0; j<map.get_width(); ++j) {
             std::string text;
             for (auto creature: map.tiles[i][j].creatures) {
                 text += creature->symbol;
             }
-            text += ".....";
-            std::cout << text.substr(0, 5) << " ";
+            text += "....";
+            std::cout << text.substr(0, 4) << " ";
         }
         std::cout << "\n";
     }
     return stream;
+}
+
+uint32_t Map::get_height() const {
+    return height;
+}
+
+uint32_t Map::get_width() const {
+    return width;
+}
+
+uint64_t Map::get_tick_id() const {
+    return tick_id;
 }

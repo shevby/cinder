@@ -6,12 +6,17 @@
 #include "JsonConfig.h"
 
 struct CreatureShortState {
-    CreatureType type;
+    CreatureShortState() = default;
+    CreatureShortState(Creature);
 
+    CreatureType type;
     std::vector<std::string> to_json_lines(JsonConfig json_config);
 };
 
 struct LocationTileShortState {
+    LocationTileShortState() = default;
+    LocationTileShortState(Tile);
+
     std::vector<CreatureShortState> creatures;
     uint32_t row;
     uint32_t column;
@@ -20,6 +25,9 @@ struct LocationTileShortState {
 };
 
 struct LocationMapShortState {
+    LocationMapShortState() = default;
+    LocationMapShortState(Map map);
+
     std::vector<LocationTileShortState> tiles;
     uint64_t tick_id;
     uint32_t width;

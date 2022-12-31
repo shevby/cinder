@@ -2,6 +2,23 @@
 #include "LocationMap.h"
 #include "utils.h"
 
+CreatureShortState::CreatureShortState(Creature c)
+    : type(c.type)
+    {}
+
+LocationTileShortState::LocationTileShortState(Tile t) {
+    for (auto c: t.creatures) {
+        creatures.push_back(CreatureShortState(*c));
+    }
+}
+
+LocationMapShortState::LocationMapShortState(Map map)
+    : width(map.get_width())
+    , height(map.get_height())
+    , tick_id(map.get_tick_id())
+{
+}
+
 std::vector<std::string> CreatureShortState::to_json_lines(JsonConfig json_config) {
     return {
         "{",

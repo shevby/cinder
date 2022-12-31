@@ -52,18 +52,26 @@ struct Tile {
 
 struct Map {
     std::vector<std::vector<Tile>> tiles;
-    Map();
+    Map(uint32_t _width, uint32_t _height);
 
     void tick();
     std::binary_semaphore semaphore{1};
 
     std::shared_ptr<std::string> get_content();
 
+    uint32_t get_width() const;
+    uint32_t get_height() const;
+    uint64_t get_tick_id() const;
+
 private:
     std::vector<std::string> to_json_lines(bool full_map, const std::string &tab) const;
     std::string to_json(bool full_map = true, const std::string &tab = "") const;
 
     std::shared_ptr<std::string> map_cache = std::make_shared<std::string>("");
+
+    uint32_t width;
+    uint32_t height;
+    uint64_t tick_id;
 };
 
 std::ostream& operator<< (std::ostream& stream, const Map& map);
