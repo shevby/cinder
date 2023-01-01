@@ -15,6 +15,10 @@ TEST_CASE("Adler-32 checksum", "[Compression]") {
     REQUIRE(adler_32_checksum("I like cats") == "\x15\x77\x03\xDA");
 }
 
+TEST_CASE("CRC-32 checksum", "[Compression]") {
+    REQUIRE(crc32("I like cats") == "\x0E\xBC\x90\x0A");
+}
+
 TEST_CASE("Simple request", "[WebServer]") {
     char request[] = "GET /";
     HttpRequest r(request, strlen(request));
