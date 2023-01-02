@@ -36,6 +36,29 @@ class FpsMeter:
         return self.fps_previous_second
 
 
+class NetworkLatencyMeter:
+    def __init__(self):
+        self.current_second = math.floor(time.time())
+        self.sum_of_all_latencies_previous_second = 0
+        self.number_of_requests_previous_second = 0
+        self.previous_second_average_latency = "N/A"
+
+    def add(self, latency):
+        current_second = math.floor(time.time())
+        if current_second == self.current_second:
+            self.sum_of_all_latencies_previous_second += latency
+            self.number_of_requests_previous_second += 1
+        else:
+            self.current_second = current_second
+            if self.number_of_requests_previous_second == 0:
+                self.previous_second_average_latency = "N/A"
+            else:
+                self.previous_second_average_latency = self.sum_of_all_latencies_previous_second / self.number_of_requests_previous_second
+
+    def get_average_latency(self):
+        return self.previous_second_average_latency
+
+
 pygame.font.init()
 
 display = pygame.display.set_mode()
@@ -80,7 +103,6 @@ class Map:
         self.tiles = []
 
     def get_tile(self, row, column):
-        print(row, column)
         if row >= len(self.tiles):
             return Tile()
         if column >= len(self.tiles[row]):
@@ -123,6 +145,7 @@ previous_request_time = 0
 json_content = '{"tiles": []}'
 location = json.loads(json_content)
 fps_meter = FpsMeter()
+network_latency_meter = NetworkLatencyMeter()
 while(True):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -153,10 +176,15 @@ while(True):
 
     if time.time() >= previous_request_time + 0.001 * GAME_STATE_REFRESH_INTERVAL_MS:
         try:
+            request_begin = time.time()
+            content = ""
             with urllib.request.urlopen(URL) as f:
-                json_content = f.read().decode('utf-8')
-        except:
-            pass
+                content = f.read()
+            request_end = time.time()
+            network_latency_meter.add(1000 * (request_end-request_begin))
+            json_content = content.decode('utf-8')
+        except Exception as e:
+            print(e)
 
         location = json.loads(json_content)
         location_map.update(location)
@@ -183,6 +211,12 @@ while(True):
     font = pygame.font.SysFont(pygame.font.get_default_font(), 40)
     caption = font.render(f"FPS: {fps_meter.fps()}", True, (255, 0, 0))
     display.blit(caption, (100, 0))
+
+    latency = network_latency_meter.get_average_latency()
+    if latency != "N/A":
+        latency = round(latency, 2)
+    caption = font.render(f"Network latency: {latency} ms", True, (255, 0, 0))
+    display.blit(caption, (100, 70))
 
     pygame.display.update()
     pygame.time.delay(20)
