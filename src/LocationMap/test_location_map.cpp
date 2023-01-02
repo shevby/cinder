@@ -19,6 +19,82 @@ TEST_CASE("CRC-32 checksum", "[Compression]") {
     REQUIRE(crc32("I like cats") == "\x0E\xBC\x90\x0A");
 }
 
+TEST_CASE("LZ77 match: no match at the beginning", "[Compression]") {
+    auto match = find_max_length_match("ABCDEF", 0, 0);
+    REQUIRE(match.length == 0);
+    match = find_max_length_match("AAAAAAA", 0, 0);
+    REQUIRE(match.length == 0);
+}
+
+TEST_CASE("LZ77 match: from index 1", "[Compression]") {
+    auto match = find_max_length_match("AAAAAAA", 1, 0);
+    REQUIRE(match.length == 1);
+    REQUIRE(match.absolute_pos == 0);
+    match = find_max_length_match("ABCDEF", 1, 0);
+    REQUIRE(match.length == 0);
+}
+
+TEST_CASE("LZ77 match: from the end", "[Compression]") {
+    auto match = find_max_length_match("AAAAAAA", 6, 0);
+    REQUIRE(match.length == 1);
+    REQUIRE(match.absolute_pos == 0);
+    match = find_max_length_match("ABCDEF", 5, 0);
+    REQUIRE(match.length == 0);
+}
+
+TEST_CASE("LZ77 match: avoid overlapping with itself", "[Compression]") {
+    auto match = find_max_length_match("AAAAAAA", 3, 0);
+    REQUIRE(match.length == 3);
+    REQUIRE(match.absolute_pos == 0);
+}
+
+TEST_CASE("LZ77 match: take longest match", "[Compression]") {
+    auto match = find_max_length_match("ABCD" "ABCDEF" "ABCD" "ABCDEFGH", 14, 0);
+    REQUIRE(match.length == 6);
+    REQUIRE(match.absolute_pos == 4);
+}
+
+TEST_CASE("to_lz77_entries", "[Compression]") {
+    auto res = to_lz77_entries("A", 100, 3);
+    std::vector<lz77_entry> expected = {
+        lz77_entry('A'),
+    };
+    CHECK(res == expected);
+
+    res = to_lz77_entries("AAA", 100, 3);
+    expected = {
+        lz77_entry('A'),
+        lz77_entry('A'),
+        lz77_entry('A'),
+    };
+    CHECK(res == expected);
+
+    res = to_lz77_entries("ABCD_ABCD", 100, 3);
+    expected = {
+        lz77_entry('A'),
+        lz77_entry('B'),
+        lz77_entry('C'),
+        lz77_entry('D'),
+        lz77_entry('_'),
+        lz77_entry(5, 4),
+    };
+    CHECK(res == expected);
+
+    res = to_lz77_entries("ABCD_ABCD", 4, 3);
+    expected = {
+        lz77_entry('A'),
+        lz77_entry('B'),
+        lz77_entry('C'),
+        lz77_entry('D'),
+        lz77_entry('_'),
+        lz77_entry('A'),
+        lz77_entry('B'),
+        lz77_entry('C'),
+        lz77_entry('D'),
+    };
+    CHECK(res == expected);
+}
+
 TEST_CASE("Simple request", "[WebServer]") {
     char request[] = "GET /";
     HttpRequest r(request, strlen(request));

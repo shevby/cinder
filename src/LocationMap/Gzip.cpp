@@ -25,6 +25,64 @@ std::string adler_32_checksum(const std::string &content) {
     return unit32_to_string((B << 16) | A);
 }
 
+lz77_entry::lz77_entry(uint16_t _offset, uint16_t _size)
+    : offset(_offset)
+    , size(_size)
+    , ch('\0')
+    {}
+
+lz77_entry::lz77_entry(char _ch)
+    : offset(0)
+    , size(0)
+    , ch(_ch)
+    {}
+
+lz77_max_length_match find_max_length_match(const std::string &content, size_t current_index, size_t starting_search_index) {
+    lz77_max_length_match res = {
+        .absolute_pos = starting_search_index,
+        .length = 0,
+    };
+
+    for (; starting_search_index < current_index; ++starting_search_index) {
+        size_t max_possible_length = std::min(current_index - starting_search_index, content.size() - current_index);
+        size_t match_length = 0;
+        for (size_t i=0; i<max_possible_length; ++i) {
+            if (content[starting_search_index + i] == content[current_index + i]) {
+                match_length++;
+                if (match_length > res.length) {
+                    res = {
+                        .absolute_pos = starting_search_index,
+                        .length = match_length,
+                    };
+                }
+            }
+            else {
+                break;
+            }
+        }
+    }
+
+    return res;
+}
+
+std::vector<lz77_entry> to_lz77_entries(const std::string &content, size_t search_distance, size_t min_match_length) {
+    std::vector<lz77_entry> res;
+
+    for (size_t i=0; i<content.size(); ++i) {
+        size_t search_start = i > search_distance ? i - search_distance : 0;
+        auto longest_match = find_max_length_match(content, i, search_start);
+        if (longest_match.length < min_match_length) {
+            res.push_back(lz77_entry(content[i]));
+        }
+        else {
+            res.push_back(lz77_entry(i - longest_match.absolute_pos, longest_match.length));
+            i += longest_match.length - 1;
+        }
+    }
+
+    return res;
+}
+
 std::string deflate_payload(const std::string &content) {
 }
 
