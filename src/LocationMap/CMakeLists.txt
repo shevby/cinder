@@ -14,6 +14,7 @@ set (
     LocationMapStateShort.cpp
     Gzip.cpp
     webserver.cpp
+    Server.cpp
     HttpRequest.cpp
     location_map_poc.cpp
     utils.cpp
