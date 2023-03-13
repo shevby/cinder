@@ -1,7 +1,10 @@
 #ifndef LOCATION_MAP_SERVER_H
 #define LOCATION_MAP_SERVER_H
 
+#include <mutex>
 #include <string>
+#include <thread>
+#include <vector>
 
 class Server {
 public:
