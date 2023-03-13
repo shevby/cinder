@@ -5,6 +5,7 @@
 #include "LocationMap.h"
 #include "LocationMapStateShort.h"
 #include "WebServer.h"
+#include "Server.h"
 
 constexpr size_t WIDTH = 30;
 constexpr size_t HEIGHT = 30;
@@ -39,11 +40,13 @@ int main() {
     }
 
     std::thread web_thread(server_thread, get_map_content, CompressionMethod::NO_COMPRESSION);
+    auto server = Server(12345);
 
     while(true) {
         std::cout << "-------------------------------------------------------------------\n\n";
         std::cout << map;
         map.tick();
+        server.update_data(get_map_content());
         sleep(1);
     }
 }
