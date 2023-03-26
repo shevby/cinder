@@ -1,0 +1,18 @@
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(100, 20px);
+  grid-template-rows: repeat(100, 20px);
+  width: fit-content;
+  height: fit-content;
+  overflow: scroll;
+  touch-action: none;
+  transition: transform 0.3s ease; /* Add a transition to the transform property */
+}
+
+.grid-cell {
+  width: 20px;
+  height: 20px;
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
