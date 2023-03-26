@@ -28,7 +28,7 @@ private:
 
     ResNode *_addType(QString name, Sin &data);
     ResNode *_addNamespace(QString name, Sin &data, ResNode *parent);
-    ResNode *_addResource(QString name, ResNode *parent);
+    ResNode *_addResource(QString name, QString filepath, ResNode *parent);
 
     ResNode *_rootItem;
 };

@@ -4,7 +4,8 @@
 
 namespace Cinder
 {
-  struct WindowSettings {
+  struct WindowSettings
+  {
     int32_t width;
     int32_t height;
     int32_t fpsLimit;
@@ -15,15 +16,16 @@ namespace Cinder
   class Engine
   {
   private:
-  sf::Clock dtClock;
-  void updateDt();
+    sf::Clock dtClock;
+    void updateDt();
+
   protected:
-  std::shared_ptr<sf::RenderWindow> window;
-  float dt;
+    std::shared_ptr<sf::RenderWindow> window;
+    float dt;
 
-  void init();
+    void init();
 
-  virtual WindowSettings initWindow() = 0;
+    virtual WindowSettings initWindow() = 0;
 
   public:
     Engine();

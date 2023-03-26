@@ -29,7 +29,7 @@ ApplicationWindow {
             }
 
             Item {
-                SplitView.maximumWidth: main.width / 2
+                SplitView.maximumWidth: 3 * main.width / 4
                 SplitView.minimumWidth: 300
                 ResourceEditor {}
             }

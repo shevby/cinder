@@ -24,6 +24,11 @@ void Resman::open(const QString &path)
     emit modelUpdated(path);
 }
 
+void Resman::load(const QString &path)
+{
+    
+}
+
 void Resman::defaults() {
     if(fs::exists("resman-config.sin")) {
         auto configStr = fs::readAll("resman-config.sin");

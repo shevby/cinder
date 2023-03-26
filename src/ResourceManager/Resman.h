@@ -22,6 +22,7 @@ public:
 public slots:
     void open(const QString &path);
     void defaults();
+    void load(const QString &path);
 signals:
     void modelUpdated(QString path);
 private:

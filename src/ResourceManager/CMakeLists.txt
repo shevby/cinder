@@ -14,6 +14,7 @@ set(
   Resman.cpp
   ResModel.cpp
   ResNode.cpp
+  Loader.cpp
 )
 
 qt_add_executable(

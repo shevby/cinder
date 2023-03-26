@@ -113,7 +113,8 @@ ResNode *ResModel::_addType(QString name, Sin &data)
 
     auto type = new ResNode(field, _rootItem);
 
-    for(auto f : object) {
+    for (auto f : object)
+    {
         type->appendChild(this->_addNamespace(QString::fromStdString(f.first), f.second, type));
     }
 
@@ -128,17 +129,23 @@ ResNode *ResModel::_addNamespace(QString name, Sin &data, ResNode *parent)
 
     auto nameSpace = new ResNode(field, parent);
 
-    for(auto f : object) {
-        nameSpace->appendChild(this->_addResource(QString::fromStdString(f.first), nameSpace));
+    for (auto f : object)
+    {
+        nameSpace->appendChild(this->_addResource(QString::fromStdString(f.first), QString::fromStdString(f.second.asString()), nameSpace));
     }
 
     return nameSpace;
 }
 
-ResNode *ResModel::_addResource(QString name, ResNode *parent)
+ResNode *ResModel::_addResource(QString name, QString filepath, ResNode *parent)
 {
+    QHash<QString, QVariant> val;
+
+    val["name"] = name;
+    val["path"] = filepath;
+
     QList<QVariant> field;
-    field.append(name);
+    field.append(val);
 
     return new ResNode(field, parent);
 }

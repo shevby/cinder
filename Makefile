@@ -1,13 +1,13 @@
-all: rebuild
+# all: rebuild
 
-.gitignore:
-	printf ".gitignore\nbuild\n" > .gitignore
+# .gitignore:
+# 	printf ".gitignore\nbuild\n" > .gitignore
 
-rebuild: clean buildall
+# rebuild: clean buildall
 
-buildall:
-	cd build && cmake .. && make
+# buildall:
+# 	cd build && cmake .. && make
 
-clean: .gitignore
-	rm -rf build
-	mkdir build
+# clean: .gitignore
+# 	rm -rf build
+# 	mkdir build
