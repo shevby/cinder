@@ -1,16 +1,29 @@
-
-#Edit to update include directories
+# Edit to update include directories
 set(
   TARGET_DIRS
   "Map"
   "MapGenerator"
-  "CinderCellEditor"
+  "Engine"
+  "Cinder"
+  "ResourceManager"
+  "ResourceManager/lib"
+  "fs"
 )
 
-# Add all directories for include
-include_directories(${TARGET_DIRS})
+#Add external dependencies
+include(AddExternal)
+addExternal()
 
-#Build targets
+# Add all directories for include
+include_directories(
+  ${TARGET_DIRS}
+)
+
+# Build targets
 add_subdirectory("Map")
 add_subdirectory("MapGenerator")
-add_subdirectory("CinderCellEditor")
+# add_subdirectory("CinderCellEditor")
+add_subdirectory("Engine")
+add_subdirectory("CinderGame")
+add_subdirectory("fs")
+add_subdirectory("ResourceManager")
